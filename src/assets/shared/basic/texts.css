@@ -1,0 +1,115 @@
+.text {
+  margin: 0;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+/* Sizes */
+.text-xs {
+  font-size: 12px;
+}
+
+.text-small {
+  font-size: 13px;
+}
+
+.text-medium {
+  font-size: 14px;
+}
+
+.text-large {
+  font-size: 16px;
+}
+
+.text-xl {
+  font-size: 18px;
+}
+
+.text-2xl {
+  font-size: 20px;
+}
+
+/* Colors */
+.text-default {
+  color: var(--text-primary, #333);
+}
+
+.text-primary {
+  color: var(--primary-color, #6094C5);
+}
+
+.text-secondary {
+  color: var(--text-secondary, #666);
+}
+
+.text-muted {
+  color: var(--text-muted, #6c757d);
+}
+
+.text-success {
+  color: var(--success-color, #28a745);
+}
+
+.text-warning {
+  color: var(--warning-color, #ffc107);
+}
+
+.text-error {
+  color: var(--error-color, #dc3545);
+}
+
+/* Weights */
+.text-light {
+  font-weight: 300;
+}
+
+.text-normal {
+  font-weight: 400;
+}
+
+.text-medium {
+  font-weight: 500;
+}
+
+.text-semibold {
+  font-weight: 600;
+}
+
+.text-bold {
+  font-weight: 700;
+}
+
+/* Alignment */
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-justify {
+  text-align: justify;
+}
+
+/* Truncate */
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .text-xl {
+    font-size: 16px;
+  }
+  
+  .text-2xl {
+    font-size: 18px;
+  }
+}

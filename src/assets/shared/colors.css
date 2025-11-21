@@ -1,0 +1,40 @@
+/*공통색상정의*/
+:root {
+
+  --layout-color: #F6F6F6;     /* 사이드바 활성 색상 */
+
+  /* Primary Colors */
+  --primary-color: #6094C5;     /* 사이드바 활성 색상 */
+  --primary-hover: #5085b5;
+  --primary-light: #e8f4fd;
+  
+  /* Secondary Colors */
+  --secondary-bg: #f8f9fa;
+  --secondary-text: #495057;
+  --secondary-border: #dee2e6;
+  --secondary-hover: #e9ecef;
+  
+  /* Text Colors */
+  --text-primary: #333;
+  --text-secondary: #666;
+  --text-muted: #6c757d;
+  
+  /* Background Colors */
+  --background-light: #f8f9fa;
+  --background-white: #ffffff;
+  
+  /* Border Colors */
+  --border-color: #e9ecef;
+  --border-light: #dee2e6;
+  
+  /* Status Colors */
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --error-color: #dc3545;
+  --info-color: #17a2b8;
+  
+  /* Shadow Colors */
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+  --shadow-primary: rgba(96, 148, 197, 0.3);
+}

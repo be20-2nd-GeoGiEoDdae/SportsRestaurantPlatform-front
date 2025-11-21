@@ -1,0 +1,132 @@
+.radio {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+
+.radio-input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.radio-mark {
+  position: relative;
+  display: inline-block;
+  border: 2px solid var(--border-color, #e9ecef);
+  border-radius: 50%;
+  background-color: white;
+  transition: all 0.3s ease;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.radio-mark::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  background-color: white;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.2s ease;
+}
+
+.radio-input:checked ~ .radio-mark {
+  background-color: var(--primary-color, #6094C5);
+  border-color: var(--primary-color, #6094C5);
+}
+
+.radio-input:checked ~ .radio-mark::after {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.radio:hover .radio-mark {
+  border-color: var(--primary-color, #6094C5);
+}
+
+.radio-input:focus ~ .radio-mark {
+  box-shadow: 0 0 0 3px rgba(96, 148, 197, 0.1);
+}
+
+.radio-label {
+  color: var(--text-primary, #333);
+  font-weight: 500;
+}
+
+/* Sizes */
+.radio-small .radio-mark {
+  width: 16px;
+  height: 16px;
+}
+
+.radio-small .radio-mark::after {
+  width: 6px;
+  height: 6px;
+}
+
+.radio-small .radio-label {
+  font-size: 13px;
+}
+
+.radio-medium .radio-mark {
+  width: 18px;
+  height: 18px;
+}
+
+.radio-medium .radio-mark::after {
+  width: 8px;
+  height: 8px;
+}
+
+.radio-medium .radio-label {
+  font-size: 14px;
+}
+
+.radio-large .radio-mark {
+  width: 20px;
+  height: 20px;
+}
+
+.radio-large .radio-mark::after {
+  width: 10px;
+  height: 10px;
+}
+
+.radio-large .radio-label {
+  font-size: 16px;
+}
+
+/* Variants */
+.radio-primary .radio-input:checked ~ .radio-mark {
+  background-color: var(--primary-color, #6094C5);
+  border-color: var(--primary-color, #6094C5);
+}
+
+.radio-success .radio-input:checked ~ .radio-mark {
+  background-color: var(--success-color, #28a745);
+  border-color: var(--success-color, #28a745);
+}
+
+.radio-warning .radio-input:checked ~ .radio-mark {
+  background-color: var(--warning-color, #ffc107);
+  border-color: var(--warning-color, #ffc107);
+}
+
+.radio-error .radio-input:checked ~ .radio-mark {
+  background-color: var(--error-color, #dc3545);
+  border-color: var(--error-color, #dc3545);
+}
+
+/* Disabled */
+.radio-disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.radio-disabled .radio-mark {
+  background-color: var(--background-light, #f8f9fa);
+  border-color: var(--border-light, #dee2e6);
+}

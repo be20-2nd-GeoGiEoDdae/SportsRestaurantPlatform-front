@@ -1,0 +1,81 @@
+.label {
+  display: inline-block;
+  font-family: inherit;
+  cursor: pointer;
+  margin-bottom: 4px;
+}
+
+/* Sizes */
+.label-small {
+  font-size: 12px;
+}
+
+.label-medium {
+  font-size: 13px;
+}
+
+.label-large {
+  font-size: 14px;
+}
+
+/* Colors */
+.label-default {
+  color: var(--text-primary, #333);
+}
+
+.label-primary {
+  color: var(--primary-color, #6094C5);
+}
+
+.label-secondary {
+  color: var(--text-secondary, #666);
+}
+
+.label-muted {
+  color: var(--text-muted, #6c757d);
+}
+
+.label-error {
+  color: var(--error-color, #dc3545);
+}
+
+/* Weights */
+.label-normal {
+  font-weight: 400;
+}
+
+.label-medium {
+  font-weight: 500;
+}
+
+.label-semibold {
+  font-weight: 600;
+}
+
+.label-bold {
+  font-weight: 700;
+}
+
+/* Required indicator */
+.label-required {
+  color: var(--error-color, #dc3545);
+  margin-left: 2px;
+  font-weight: 600;
+}
+
+/* Hover effect */
+.label:hover {
+  color: var(--primary-color, #6094C5);
+  transition: color 0.2s ease;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .label-medium {
+    font-size: 12px;
+  }
+  
+  .label-large {
+    font-size: 13px;
+  }
+}
