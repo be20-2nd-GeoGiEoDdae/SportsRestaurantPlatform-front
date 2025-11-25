@@ -1,0 +1,92 @@
+
+.cancel-page {
+  min-height: 100vh;
+  background: #f2f2f2;
+  display: flex;
+  flex-direction: column;
+}
+/* 메인 */
+.main-area {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 40px 16px;
+}
+
+.cancel-card {
+  width: 100%;
+  max-width: 900px;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.page-title {
+  font-size: 24px;
+  margin-bottom: 24px;
+  font-weight: 700;
+}
+
+/* 가운데 카드 */
+.inner-card-wrapper {
+  background: #f2f2f2;
+}
+
+.message-card {
+  max-width: 720px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 4px;
+  padding: 24px 32px;
+}
+
+.message-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.brand-text {
+  color: #409eff;
+  font-weight: 700;
+}
+
+.message-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.message-body {
+  font-size: 14px;
+  color: #606266;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.message-footer {
+  text-align: center;
+}
+
+.confirm-text {
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.cancel-btn {
+  background: #e0e0e0;
+  border-color: #e0e0e0;
+  color: #303133;
+  padding: 10px 32px;
+}
+
+/* 아래 큰 버튼 */
+.back-main-btn {
+  display: block;
+  max-width: 720px;
+  margin: 24px auto 0;
+  width: 100%;
+  height: 48px;
+  font-size: 16px;
+}

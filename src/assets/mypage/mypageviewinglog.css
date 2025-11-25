@@ -1,0 +1,243 @@
+.view-history-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background: #fafafa;
+  overflow: hidden;
+}
+
+
+/* 제목 */
+.page-title {
+  font-size: 20px;
+  /*  //margin-bottom: 20px;
+    //text-align: center;*/
+  text-align: left;
+}
+
+/* 검색 */
+.search-box {
+  margin-bottom: 22px;
+  block-size:50px;
+  display: flex;
+}
+
+/* 카드 하나 */
+.history-card {
+  background: white;
+  border: 2px solid #6D94C5;
+  border-radius: 12px;
+  padding: 0;
+  margin-bottom: 25px;
+}
+
+/* 상태 라벨 */
+.status-label {
+  font-size: 18px;
+  font-weight: bold;
+}
+.date{
+  display: inline-block;
+  float: right;
+  padding-right: 20px;
+  color : #000000;
+}
+
+.status-label.done {
+  padding-top: 10px;
+  padding-left: 15px;
+  color: #6D94C5;
+}
+
+.status-label.wait {
+  padding-left: 15px;
+  padding-top: 10px;
+  color: #ff8c00;
+}
+
+.card-body {
+  padding: 16px;
+  display: flex;
+  gap: 18px;
+}
+
+.left-img img {
+  width: 90px;
+  height: 90px;
+  border-radius: 8px;
+}
+
+.center-info {
+  flex: 1;
+}
+
+.center-info .title {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+/* 우측 버튼 영역 */
+.right-info {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  gap: 6px;
+}
+
+/* 페이지네이션 */
+.pagination-wrapper {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}
+/* 메인 영역 */
+.content {
+  flex: 1;                /* 남는 공간 모두 차지 */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;       /* 스크롤 자연스럽게 */
+  background: #f6f6f6;
+}
+.main-section {
+  flex: 1;                /* 남는 공간 채우기 */
+  padding: 0 40px;
+  overflow-y: auto;       /* 내용 스크롤 */
+}
+/* 오버레이 기준이 되는 컨테이너 */
+
+/* 반투명 배경 */
+.cancel-overlay {
+  position: absolute;
+  inset: 0; /* top/right/bottom/left: 0 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.75);
+  z-index: 20;
+}
+
+/* 가운데 흰 카드 (이미지 느낌) */
+.cancel-dialog {
+  width: 540px;
+  max-width: 90%;
+  padding: 32px 40px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 2px solid #00a9ff;
+  box-shadow: 0 0 18px rgba(0, 169, 255, 0.35);
+  text-align: center;
+}
+
+.cancel-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.cancel-text {
+  font-size: 14px;
+  color: #606266;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.cancel-text--strong {
+  margin-top: 16px;
+  font-weight: 600;
+}
+
+.cancel-buttons {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+/* 왼쪽 파란 버튼 */
+.btn-keep {
+  min-width: 140px;
+  height: 44px;
+  border-radius: 22px;
+  background: #00a9ff;
+  border-color: #00a9ff;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* 오른쪽 흰+빨간 버튼 */
+.btn-cancel-final {
+  min-width: 140px;
+  height: 44px;
+  border-radius: 22px;
+  background: #ffffff;
+  border-color: #ff5050;
+  color: #ff5050;
+  font-weight: 600;
+}
+
+/* 반투명 배경 */
+.report-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center; /* 필요하면 flex-start + padding-top 으로 아래로 내릴 수 있음 */
+  z-index: 30;
+}
+
+/* 가운데 신고 카드 */
+.report-dialog {
+  width: 420px;
+  max-width: 90%;
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #dcdfe6;
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.12);
+  padding: 20px 24px 16px;
+  font-size: 14px;
+}
+
+.report-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.report-section {
+  margin-bottom: 12px;
+}
+
+.report-label {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* 라디오 리스트를 세로로 */
+.report-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.report-radio-group :deep(.el-radio) {
+  margin-right: 0;
+}
+.report-radio-group :deep(.el-radio__label) {
+  font-size: 13px;
+}
+
+/* 버튼 영역 */
+.report-buttons {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-cancel {
+  min-width: 90px;
+}
+
+.btn-submit {
+  min-width: 90px;
+}

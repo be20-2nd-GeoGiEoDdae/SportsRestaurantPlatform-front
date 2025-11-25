@@ -1,5 +1,7 @@
 <script setup>
-import { ref } from 'vue'
+import {ref, watch} from 'vue'
+import {START_LOCATION_NORMALIZED as route} from "vue-router/dist/devtools-BLCumUwL.mjs";
+import {useRouter} from "vue-router";
 
 // 현재 선택된 메뉴
 const activeMenu = ref('프로필 조회')
@@ -9,6 +11,8 @@ const activeSubMenu = ref('내 가게 조회')
 const showProfileSubmenu = ref(true)
 const showSubscribeSubmenu = ref(false)
 
+const router = useRouter()
+
 // 메뉴 데이터
 const menuItems = [
   {
@@ -16,35 +20,35 @@ const menuItems = [
     name: '메인 페이지',
   },
   {
-    id: 'profile',
+    id: 'Profile',
     name: '프로필 조회',
     subItems: [
-      { id: 'myStore', name: '내 가게 조회' },
-      { id: 'profileEdit', name: '프로필 조회' }
+      { id: 'MyStore', name: '내 가게 조회' },
+      { id: 'ProfileEdit', name: '프로필 조회' }
     ]
   },
   {
-    id: 'bookmark',
+    id: 'BookMark',
     name: '즐겨찾기 목록',
   },
   {
-    id: 'viewing',
+    id: 'ViewingLog',
     name: '관람 내역'
   },
   {
-    id: 'like',
+    id: 'ReviewLog',
     name: '리뷰 조회',
   },
   {
-    id: 'pay',
+    id: 'ViewingPayLog',
     name: '결제 내역 조회'
   },
   {
-    id: 'subscribe',
+    id: 'Subscribe',
     name: '구독 결제',
     subItems: [
-      { id: 'subscribeRegister', name: '구독 결제 신청' },
-      { id: 'subscribeCheck', name: '구독 내역 조회' }
+      { id: 'SubscribeRegister', name: '구독 결제 신청' },
+      { id: 'SubscribeLog', name: '구독 내역 조회' }
     ],
   },
   {
@@ -53,6 +57,9 @@ const menuItems = [
   }
 ]
 
+const syncMenu=()=>{
+  activeMenu.value=route.name.replace('MyPage-', '')
+}
 // 메뉴 클릭 핸들러
 const handleMenuClick = (menu) => {
   activeMenu.value = menu.name
@@ -62,6 +69,7 @@ const handleMenuClick = (menu) => {
   } else if (menu.id === 'subscribe') {
     showSubscribeSubmenu.value = !showSubscribeSubmenu.value
   }
+  router.push({ name: 'MyPage-'+menu.id })
   
   console.log(`메뉴 클릭: ${menu.name}`)
 }
@@ -72,6 +80,11 @@ const handleSubMenuClick = (parentMenu, subMenu) => {
   activeSubMenu.value = subMenu.name
   console.log(`하위메뉴 클릭: ${parentMenu} > ${subMenu.name}`)
 }
+watch()(
+    ()=>route.name,
+    ()=>syncMenu(),
+    { immediate: true }
+)
 </script>
 
 <template>
