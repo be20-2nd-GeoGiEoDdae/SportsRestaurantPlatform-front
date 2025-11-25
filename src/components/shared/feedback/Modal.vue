@@ -111,7 +111,7 @@ onUnmounted(() => {
           <div v-if="showHeader" class="modal-header">
             <h3 v-if="title" class="modal-title">{{ title }}</h3>
             <slot name="header" v-else></slot>
-            
+
             <button
               v-if="closable"
               type="button"

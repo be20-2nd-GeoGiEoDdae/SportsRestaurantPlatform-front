@@ -1,13 +1,24 @@
 <!DOCTYPE html>
-<html lang="">
-  <head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vite App</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SportsRestaurantPlatform</title>
+
+    <!-- Google Maps API (async만 사용) -->
+    <script
+            async
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQLs6MyWACHJgUZ8PVoVjV2BrMcf0-V8M&libraries=places&language=ko&v=beta">
+    </script>
+
+    <!-- Google Maps Web Components (gmpx) -->
+    <script type="module"
+            src="https://unpkg.com/@googlemaps/extended-component-library@latest/dist/index.min.js">
+    </script>
+</head>
+
+<body>
+<div id="app"></div>
+<script type="module" src="/src/main.js"></script>
+</body>
 </html>

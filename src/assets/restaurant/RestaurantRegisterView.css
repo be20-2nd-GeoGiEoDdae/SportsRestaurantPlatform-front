@@ -1,0 +1,217 @@
+.store-wrapper {
+    padding: 40px;
+    background: #f8f8f8;
+    min-height: 100vh;
+}
+
+.content-box {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 50px;
+    border: 1px solid #ddd;
+    display: flex;
+    gap: 60px;
+}
+
+.left-section {
+    width: 45%;
+}
+
+.right-section {
+    width: 55%;
+}
+
+.main-photo {
+    width: 100%;
+    height: 400px;
+    background: #fafafa;
+    border: 1px solid #999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sub-photos {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.photo-box {
+    width: 110px;
+    height: 110px;
+    border: 1px solid #aaa;
+    background: #fafafa;
+}
+
+.more-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    background: #f0f0f0;
+}
+
+.preview-sub-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.notice-text {
+    margin-top: 10px;
+    color: #555;
+    font-size: 13px;
+}
+
+.info-summary {
+    margin-top: 35px;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    background: #fafafa;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #444;
+}
+
+.summary-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.form-block {
+    margin-bottom: 25px;
+}
+
+.form-title {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.btn-wrapper {
+    margin-top: 40px;
+    text-align: right;
+}
+
+/* ================= 키워드 태그 박스 ================= */
+.keyword-selected-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    min-height: 60px;
+    background: #fafafa;
+}
+
+.keyword-tag {
+    display: flex;
+    align-items: center;
+    background: #3b82f6;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.delete-x {
+    margin-left: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.keyword-limit {
+    margin-top: 6px;
+    font-size: 13px;
+    color: red;
+}
+
+
+/* =====================================
+      📱 1700px 이하 반응형
+      (지금 네 화면에서도 즉시 적용!)
+===================================== */
+@media (max-width: 1700px) {
+
+    .content-box {
+        flex-direction: column; /* 좌우 → 상하 */
+        gap: 40px;
+        padding: 40px;
+    }
+
+    .left-section,
+    .right-section {
+        width: 100%;
+    }
+
+    .main-photo {
+        height: 360px;
+    }
+
+    .sub-photos {
+        gap: 12px;
+    }
+
+    .photo-box {
+        width: 100px;
+        height: 100px;
+    }
+}
+
+
+/* =====================================
+      📱 1024px 이하 반응형
+===================================== */
+@media (max-width: 1024px) {
+
+    .main-photo {
+        height: 300px;
+    }
+
+    .photo-box {
+        width: 90px;
+        height: 90px;
+    }
+}
+
+
+/* =====================================
+      📱 768px 이하 반응형
+===================================== */
+@media (max-width: 768px) {
+
+    .content-box {
+        padding: 20px;
+    }
+
+    .main-photo {
+        height: 250px;
+    }
+
+    .photo-box {
+        width: 80px;
+        height: 80px;
+    }
+
+    .form-title {
+        font-size: 14px;
+    }
+}

@@ -1,0 +1,265 @@
+/* =============================
+      기본 레이아웃
+============================= */
+.wrapper {
+    display: flex;
+    gap: 40px;
+    padding: 40px;
+    background: #F6F6F6;
+    min-height: 100vh;
+}
+
+/* =========== 왼쪽 필터 박스 =========== */
+.filter-box {
+    width: 320px;
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    border: 2px solid #6D94C5;
+}
+
+.filter-title {
+    font-size: 22px;
+    margin-bottom: 25px;
+}
+
+.filter-section {
+    margin-bottom: 30px;
+}
+
+.filter-label {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.category-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.food-btn {
+    background: #6D94C5;
+    color: white;
+    border-radius: 10px;
+    width: 80px;
+    height: 40px;
+}
+
+.keyword-add-btn {
+    margin-top: 10px;
+    background: #EDEDED;
+}
+
+.keyword-list {
+    margin-top: 15px;
+    border: 1px solid #6D94C5;
+    padding: 15px;
+    border-radius: 10px;
+    background: white;
+}
+
+.keyword-tag {
+    background: #6D94C5;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* =========== 오른쪽 리스트 =========== */
+.list-box {
+    flex: 1;
+}
+
+.top-row {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.near-btn {
+    background: none;
+    border: 1px solid #6D94C5;
+    color: black;
+}
+
+.restaurant-list {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.store-card {
+    display: flex;
+    border: 2px solid #6D94C5;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    padding-right: 130px;
+}
+
+.store-img {
+    width: 45%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.store-info {
+    padding: 20px;
+    font-size: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.favorite {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 22px;
+}
+
+/* 예치금 */
+.deposit-right {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* =========== 페이지네이션 =========== */
+.pagination-box {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.page-number {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: none;
+    background: white;
+    font-size: 15px;
+}
+
+.page-number.active {
+    background: #6D94C5;
+    color: white;
+}
+
+.page-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+}
+
+/* =========== 등록 버튼 =========== */
+.register-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 40px;
+}
+
+.register-btn {
+    width: 180px;
+    height: 50px;
+    background: #6D94C5;
+    color: white;
+    font-size: 18px;
+    border-radius: 12px;
+}
+
+
+/* =====================================
+      📱 1700px 이하 반응형
+      (지금 네 화면에서도 바로 발동!)
+===================================== */
+@media (max-width: 1700px) {
+
+    .wrapper {
+        flex-direction: column; /* 좌우 -> 상하 */
+        gap: 30px;
+    }
+
+    .filter-box {
+        width: 100%; /* 한 줄 꽉 채움 */
+        order: 1;
+    }
+
+    .list-box {
+        width: 100%;
+        order: 2;
+    }
+
+    .store-card {
+        flex-direction: column; /* 사진 위, 정보 아래 */
+        padding-right: 20px;
+        height: auto;
+    }
+
+    .store-img {
+        width: 100%;
+        height: 260px;
+    }
+
+    .deposit-right {
+        position: relative;
+        right: 0;
+        bottom: 0;
+        margin-top: 10px;
+    }
+}
+
+
+/* =====================================
+      📱 1024px 이하 반응형
+===================================== */
+@media (max-width: 1024px) {
+
+    .store-img {
+        height: 220px;
+    }
+
+    .food-btn {
+        width: 70px;
+        height: 38px;
+    }
+}
+
+
+/* =====================================
+      📱 768px 이하 반응형
+===================================== */
+@media (max-width: 768px) {
+
+    .filter-box {
+        padding: 20px;
+    }
+
+    .store-card {
+        padding: 15px;
+    }
+
+    .store-img {
+        height: 200px;
+    }
+
+    .register-btn {
+        width: 150px;
+        height: 45px;
+    }
+}
