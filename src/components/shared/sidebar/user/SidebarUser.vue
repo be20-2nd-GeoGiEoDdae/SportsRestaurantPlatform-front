@@ -1,7 +1,10 @@
 <script setup>
-import { ref } from 'vue'
+import {ref, watch} from 'vue'
+import router from "@/router/index.js";
+import {useRoute} from "vue-router";
 
 // 현재 선택된 메뉴
+const route=useRoute()
 const activeMenu = ref('프로필 조회')
 const activeSubMenu = ref('사업자 신청')
 
@@ -16,27 +19,27 @@ const menuItems = [
     name: '메인 페이지',
   },
   {
-    id: 'profile',
+    id: 'Profile',
     name: '프로필 조회',
     subItems: [
-      { id: 'entrepreneurRegister', name: '사업자 신청' },
-      { id: 'profileEdit', name: '프로필 조회' }
+      { id: 'EntrepreneurRegister', name: '사업자 신청' },
+      { id: 'ProfileEdit', name: '프로필 조회' }
     ]
   },
   {
-    id: 'bookmark',
+    id: 'BookMark',
     name: '즐겨찾기 목록',
   },
   {
-    id: 'viewing',
+    id: 'ViewingLog',
     name: '관람 내역'
   },
   {
-    id: 'like',
+    id: 'ReviewLog',
     name: '리뷰 조회',
   },
   {
-    id: 'pay',
+    id: 'ViewingPayLog',
     name: '결제 내역 조회'
   },
   {
@@ -45,13 +48,23 @@ const menuItems = [
   }
 ]
 
+const syncMenu = ()=>{
+  //const name=route.name
+  activeMenu.value=route.name.replace('MyPage-', '')
+  if(activeMenu.value==='ProfileEdit'||activeMenu.value==='EntrepreneurRegister'){
+    activeSubMenu.value=activeMenu.value;
+    activeMenu.value='Profile';
+  }
+}
 // 메뉴 클릭 핸들러
 const handleMenuClick = (menu) => {
-  activeMenu.value = menu.name
+  activeMenu.value = menu.id
   
-  if (menu.id === 'profile') {
+  if (menu.id === 'Profile') {
     showProfileSubmenu.value = !showProfileSubmenu.value
-  } 
+  }else{
+    router.push({ name: 'MyPage-'+menu.id })
+  }
   
   console.log(`메뉴 클릭: ${menu.name}`)
 }
@@ -60,8 +73,14 @@ const handleMenuClick = (menu) => {
 const handleSubMenuClick = (parentMenu, subMenu) => {
   activeMenu.value = parentMenu
   activeSubMenu.value = subMenu.name
+  router.push({ name: 'MyPage-'+subMenu.id })
   console.log(`하위메뉴 클릭: ${parentMenu} > ${subMenu.name}`)
 }
+watch(
+    () => route.name,
+    () => syncMenu(),
+    { immediate: true }
+)
 </script>
 
 <template>
@@ -74,7 +93,7 @@ const handleSubMenuClick = (parentMenu, subMenu) => {
         <button 
           class="menu-item"
           :class="{ 
-            active: activeMenu === menu.name,
+            active: activeMenu === menu.id,
             'has-submenu': menu.subItems 
           }"
           @click="handleMenuClick(menu)"
@@ -83,19 +102,19 @@ const handleSubMenuClick = (parentMenu, subMenu) => {
           <span class="menu-text">{{ menu.name }}</span>
           <span v-if="menu.subItems" class="arrow" 
                 :class="{ 
-                  expanded: (showProfileSubmenu && menu.id === 'profile')
+                  expanded: (showProfileSubmenu && menu.id === 'Profile')
                 }">
             ▼
           </span>
         </button>
 
         <!-- 프로필 조회 하위메뉴 -->
-        <div v-if="menu.id === 'profile'" class="submenu" :class="{ show: showProfileSubmenu }">
+        <div v-if="menu.id === 'Profile'" class="submenu" :class="{ show: showProfileSubmenu }">
           <button 
             v-for="subItem in menu.subItems" 
             :key="subItem.id"
             class="submenu-item"
-            :class="{ active: activeSubMenu === subItem.name && activeMenu === menu.name }"
+            :class="{ active: activeSubMenu === subItem.id && activeMenu === menu.id }"
             @click="handleSubMenuClick(menu.name, subItem)"
           >
             {{ subItem.name }}

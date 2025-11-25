@@ -1,0 +1,163 @@
+/* ===== 캔버스/뷰포트 ===== */
+.viewport {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+
+}
+
+.canvas {
+  width: 1024px;
+  height: 768px;
+  transform-origin: top left;
+  box-sizing: border-box;
+}
+
+/* ===== 페이지 전체 ===== */
+.review-page {
+  height: 100%;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* 메인 레이아웃 */
+.main-layout {
+  flex: 1;
+  display: flex;
+}
+
+
+/* 오른쪽 리뷰 영역 */
+.review-main {
+  flex: 1;
+  padding: 24px 32px;
+  background: #f6f6f6;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.title-divider {
+  height: 2px;
+  width: 100%;
+  background: #000000;
+  margin-bottom: 20px;
+}
+
+/* 리뷰 카드 */
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.review-card {
+  background: #ffffff;
+  border-radius: 10px;
+  border: 2px solid #6D94C5;
+  box-shadow: 0 0 6px rgba(0, 169, 255, 0.3);
+  padding: 16px 18px;
+}
+
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.review-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.review-date {
+  font-size: 13px;
+  color: #606266;
+}
+
+.review-card-body {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.review-image img {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* 가운데 내용 */
+.review-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.review-info-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.place {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.rating-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #ffe37a;
+  color: #333;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.review-desc {
+  font-size: 13px;
+  color: #606266;
+  line-height: 1.5;
+}
+
+/* 오른쪽 버튼 */
+.review-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  margin-left: 8px;
+}
+
+.btn-edit {
+  border-radius: 999px;
+  border-color: #6D94C5;
+  color: #6D94C5;
+  background: #ffffff;
+}
+
+.btn-delete {
+  border-radius: 999px;
+  border-color: #ff8c9b;
+  color: #ff4d67;
+  background: #ffeef2;
+}
+
+/* 페이지네이션 */
+.pagination-wrapper {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}
