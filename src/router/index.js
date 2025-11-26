@@ -5,6 +5,19 @@ import RestaurantListDetailedView from "@/views/restaurant/entrepreneur/Restaura
 import ViewingRegisterView from "@/views/viewing/entrepreneur/ViewingRegisterView.vue";
 import ViewingListView from "@/views/viewing/entrepreneur/ViewingListView.vue";
 import ViewingListDetailedView from "@/views/viewing/entrepreneur/ViewingListDetailedView.vue";
+import Home from '@/views/Home.vue'
+import AdminLogin from '@/views/admin/AdminLogin.vue'
+import SignupAdditional from '@/views/auth/SignupAdditional.vue'
+import SignupComplete from '@/views/auth/SignupComplete.vue'
+import LoginSuccess from '@/views/auth/LoginSuccess.vue'
+import AdminUserView from '@/views/admin/AdminUserView.vue'
+import AdminEntrepreneurView from '@/views/admin/AdminEntrepreneurView.vue'
+import RestaurantRegisterView from '@/views/restaurant/RestaurantRegisterView.vue'
+import RestaurantListView from "@/views/restaurant/RestaurantListView.vue";
+import RestaurantListDetailedView from "@/views/restaurant/RestaurantListDetailedView.vue";
+import ViewingRegisterView from "@/views/viewing/ViewingRegisterView.vue";
+import ViewingListView from "@/views/viewing/ViewingListView.vue";
+import ViewingListDetailedView from "@/views/viewing/ViewingListDetailedView.vue";
 import MyPageViewingLog from "@/views/mypage/MyPageViewingLog.vue";
 import MyPageSubscribeCancel from "@/views/mypage/MyPageSubscribeCancel.vue";
 import MyPageSubscribeCancelConfirm
@@ -51,6 +64,41 @@ const routes = [
 
 
     {path:'/MyPage/ProfileEdit',name:'MyPage-ProfileEdit',component:MyPageProfileEdit},
+    {
+      path: '/',
+      name: 'Home',
+      component: Home
+    },
+    {
+      path: '/admin/login',
+      name: 'AdminLogin',
+      component: AdminLogin
+    },
+    {
+      path: '/admin/user-view',
+      name: 'AdminUserView',
+      component: AdminUserView
+    },
+    {
+      path: '/admin/entrepreneur-view',
+      name: 'AdminEntrepreneurView',
+      component: AdminEntrepreneurView
+    },
+    {
+      path: '/signup/additional',
+      name: 'SignupAdditional',
+      component: SignupAdditional
+    },
+    {
+      path: '/signup/complete',
+      name: 'SignupComplete',
+      component: SignupComplete
+    },
+    {
+      path: '/login/success',
+      name: 'LoginSuccess',
+      component: LoginSuccess
+    },
     {path: '/restaurant/register', name: 'RestaurantRegister', component: RestaurantRegisterView},
     {path: '/restaurant', name: 'RestaurantList',component: RestaurantListView},
     {path: '/restaurant/detailed/:id', name: 'RestaurantListDetailed',component: RestaurantListDetailedView},

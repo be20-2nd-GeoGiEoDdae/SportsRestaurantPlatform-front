@@ -366,7 +366,7 @@ const submitForm = async () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #f8f9fa;
+  background-color: var(--background-light);
   padding: 20px;
   font-family: 'Malgun Gothic', sans-serif;
 }
@@ -378,7 +378,7 @@ const submitForm = async () => {
 }
 
 .logo-icon {
-  background-color: #4FC3F7;
+  background-color: var(--primary-color);
   color: white;
   width: 50px;
   height: 50px;
@@ -393,7 +393,7 @@ const submitForm = async () => {
 .logo-text {
   font-size: 18px;
   font-weight: bold;
-  color: #4FC3F7;
+  color: var(--primary-color);
 }
 
 .title {
@@ -401,14 +401,14 @@ const submitForm = async () => {
   font-weight: bold;
   margin-bottom: 30px;
   text-align: center;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .signup-form {
-  background-color: white;
+  background-color: var(--background-white);
   padding: 40px;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px var(--shadow-light);
   width: 100%;
   max-width: 480px;
 }
@@ -455,13 +455,13 @@ const submitForm = async () => {
 }
 
 .error-message {
-  color: #f44336;
+  color: var(--error-color);
   font-size: 12px;
   margin-top: 4px;
 }
 
 .success-message {
-  color: #4caf50;
+  color: var(--success-color);
   font-size: 12px;
   margin-top: 4px;
 }

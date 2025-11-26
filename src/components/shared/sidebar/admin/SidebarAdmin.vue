@@ -43,8 +43,8 @@ const menuRoutes = {
   announcement: '/admin/announcement/Announcement',              // 공지사항
 
   member: {
-    general: '/admin/member/general',   // 회원 관리 - 일반
-    business: '/admin/member/business', // 회원 관리 - 사업자
+    general: '/admin/user-view',   // 회원 관리 - 일반
+    business: '/admin/entrepreneur-view', // 회원 관리 - 사업자
   },
   category: {
     restaurant: '/admin/keywordRestaurant',        // 키워드 관리 - 가게
