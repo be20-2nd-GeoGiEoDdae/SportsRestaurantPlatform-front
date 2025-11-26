@@ -1,19 +1,19 @@
 <template>
   <div class="view-history-layout">
+
     <!-- 좌측 사이드바 -->
     <aside class="sidebar">
-      <SidebarUser/>
+      <SidebarUser />
     </aside>
 
-    <!-- 메인 -->
+    <!-- 오른쪽 메인 -->
     <main class="content">
 
-      <!-- 본문 -->
-      <section class="main-section">
+      <!-- 제목은 박스 밖에 위치 (리뷰와 동일하게) -->
+      <h2 class="page-title">관람 내역</h2>
 
-        <h2 class="page-title">관람 내역</h2>
-
-        <section class="history-section">
+      <!-- 하얀 박스 시작: 리뷰의 list-section과 동일한 구조 -->
+      <section class="history-section">
 
         <!-- 검색창 -->
         <el-input
@@ -23,47 +23,50 @@
             :prefix-icon="Search"
         />
 
-        <!-- 카드 리스트 (상태별 묶음 없음) -->
+        <!-- 카드 리스트 -->
         <div
             class="history-card"
             v-for="viewing in viewingList"
             :key="'item-' + viewing.id"
         >
+
           <!-- 상태 라벨 -->
           <div
               class="status-label"
               :class="{ done: viewing.status === 'true', wait: viewing.status === 'false' }"
           >
-            {{ viewing.status ? '관람 완료' : '관람 예약 중' }}
+            {{ viewing.status ? "관람 완료" : "관람 예약 중" }}
             <div class="date">관람일시 : {{ viewing.viewingAt }}</div>
           </div>
 
-
-          <!--          <div class="card-body">
-                      <div class="left-img">
-                        <img src="https://via.placeholder.com/90"/>
-                      </div>-->
+          <!-- 카드 내용 -->
           <div class="card-body">
-            <div class="left-img"><img
-                v-if="viewing.pictures && viewing.pictures.length"
-                :src="viewing.pictures[0]"
-                class="thumb-img"
-                alt="관람 썸네일"
-            />
+            <!-- 왼쪽 이미지 영역 -->
+            <div class="left-img">
+              <img
+                  v-if="viewing.pictures && viewing.pictures.length"
+                  :src="viewing.pictures[0]"
+                  class="thumb-img"
+                  alt="관람 썸네일"
+              />
               <span v-else>사진 없음</span>
             </div>
 
+            <!-- 가운데 정보 -->
             <div class="center-info">
               <div class="title">{{ viewing.title }}</div>
               <div class="info">가격 : {{ viewing.amount }}</div>
               <div class="info">위치 : {{ viewing.location }}</div>
             </div>
 
+            <!-- 오른쪽 버튼 -->
             <div class="right-info">
-
               <el-button
-                  type="primary" size="small" plain
-                  @click="goViewingDetail(viewing)">
+                  type="primary"
+                  size="small"
+                  plain
+                  @click="goViewingDetail(viewing)"
+              >
                 관람 상세 내역
               </el-button>
 
@@ -100,14 +103,14 @@
           </div>
         </div>
 
-
+        <!-- 결제 취소 오버레이 -->
         <div v-if="showCancelOverlay" class="cancel-overlay">
           <div class="cancel-dialog">
             <h3 class="cancel-title">결제를 취소 하시겠습니까?</h3>
 
             <p class="cancel-text">
-              관람일로부터 일주일 보다 이전에 결제 시 전액 환불 되며<br/>
-              관람일 하루 전부터 3일 이내에 환불 시 결제 금액의 50%만 환불 됩니다.
+              관람일로부터 일주일 보다 이전에 결제 시 전액 환불 되며<br />
+              관람일 하루 전부터 3일 이내 환불 시 결제 금액의 50%만 환불 됩니다.
             </p>
 
             <p class="cancel-text cancel-text--strong">
@@ -125,6 +128,7 @@
           </div>
         </div>
 
+        <!-- 신고 오버레이 -->
         <div v-if="showReportOverlay" class="report-overlay">
           <div class="report-dialog">
             <h3 class="report-title">가게 신고</h3>
@@ -168,20 +172,23 @@
           </div>
         </div>
 
-        <div class="pagination-wrapper">
+        <!-- 페이지네이션 -->
+        <div class="bottom-pagination">
           <el-pagination
-              :total="totalElements"
-              :page-size="pageSize"
-              :current-page="currentPage"
+              v-if="pageInfo"
+              :current-page="pageInfo?.page"
+              :page-size="pageInfo?.size"
+              :total="pageInfo?.totalElements"
               layout="prev, pager, next"
               @current-change="handlePageChange"
           />
         </div>
-        </section>
+
       </section>
     </main>
   </div>
 </template>
+
 
 <script setup>
 import {ref, computed, onMounted} from "vue";
@@ -194,9 +201,11 @@ const viewingList = ref([]);
 const loading = ref(false);
 const errorMessage = ref('');
 const selectedViewing = ref(null);
-const currentPage= ref(1);
-const pageSize =ref(10);
-const totalElements=ref(0);
+const pageInfo = ref({
+  page: 1,
+  size: 10,
+  totalElements: 0,
+});
 
 const getImageUrl = (path) => {
   if (!path) {
@@ -216,13 +225,13 @@ const REPORT_TYPE_CODE_MAP = {
   "기타": 5,
 };
 
-const loadingViewingLog = async () => {
+const loadingViewingLog = async (page = 1) => {
   loading.value = true;
   errorMessage.value = '';
   try {
     const res = await viewingLogList(1,{
-      page: currentPage.value - 1, // ✅ Spring은 0부터, UI는 1부터라 -1
-          size: pageSize.value,
+      page: page - 1, // ✅ Spring은 0부터, UI는 1부터라 -1
+          size: pageInfo.value.size,
     });
     const pageData = res.data.data;
 
@@ -241,8 +250,9 @@ const loadingViewingLog = async () => {
         pictures, // 🔹 카드에서 쓸 이미지 배열
       };
     });
-    totalElements.value = pageData.totalElements;
-    pageSize.value = pageData.size;
+    pageInfo.value.totalElements = pageData.totalElements;
+    pageInfo.value.size = pageData.size;
+    pageInfo.value.page = page;
   } catch (e) {
     console.error(e);
     errorMessage.value = e.message || '관람 내역 조회 중 오류가 발생했습니다.';
@@ -295,8 +305,7 @@ const reportForm = ref({
 });
 
 const handlePageChange = (page) => {
-  currentPage.value = page;
-  loadingViewingLog();
+  loadingViewingLog(page);
 };
 
 const openReportOverlay = (ticket) => {
@@ -360,11 +369,17 @@ const goViewingDetail = (viewing) => {
   router.push(`/restaurant/detailed/${viewing.viewingCode}`);
 };
 onMounted(() => {
-  loadingViewingLog();
+  loadingViewingLog(1);
 })
 </script>
 
 <style scoped>
 /* 전체 레이아웃 동일 */
 @import "@/assets/mypage/mypageviewinglog.css";
+
+.bottom-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
 </style>

@@ -3,6 +3,8 @@ import { ref, onMounted } from "vue";
 import axios from "axios";
 import SidebarAdmin from "@/components/shared/sidebar/admin/SidebarAdmin.vue";
 import { ElMessage } from "element-plus";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/authStore";
 
 /* ===========================================
  * 상태값
@@ -26,6 +28,9 @@ const selectedSportCountry = ref(null);
 const selectedSportLeague = ref(null);
 const selectedCountryForLeague = ref(null);
 const selectedLeague = ref(null);
+
+const router = useRouter();
+const authStore = useAuthStore();
 
 /* ===========================================
  * 조회 API (DTO: *QueryDto)
@@ -171,7 +176,15 @@ const createTeam = async () => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
+  await authStore.loadFromToken();
+  console.log("🔐 현재 사용자 role =", authStore.role);
+
+  if (authStore.role !== "ROLE_ADMIN") {
+    alert("관리자만 접근할 수 있습니다.");
+    router.push("/");
+    return;
+  }
   loadSports();
 });
 </script>

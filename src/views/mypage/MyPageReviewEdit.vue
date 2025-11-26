@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import SidebarUser from "@/components/shared/sidebar/user/SidebarUser.vue";
 
 const route = useRoute();
@@ -128,112 +128,102 @@ onMounted(() => {
 
 <template>
   <div class="review-page">
-    <div class="review-body">
-      <!-- 왼쪽 사이드바 -->
-      <aside class="review-sidebar">
-        <SidebarUser />
-      </aside>
 
-      <!-- 오른쪽 본문 -->
-      <main class="review-content">
-        <h1 class="page-title">리뷰 등록</h1>
+    <!-- 좌측 사이드바 -->
+    <aside class="review-sidebar">
+      <SidebarUser />
+    </aside>
 
-        <section class="review-section">
-          <!-- ===============================
-               상단 요약 박스
-          =============================== -->
-          <section class="match-summary">
-            <div class="thumb-box">
-              <img
-                  v-if="pictureUrls.length > 0"
-                  :src="pictureUrls[0]"
-                  class="thumb-img"
-              />
-              <span v-else>사진 없음</span>
-            </div>
+    <!-- 오른쪽 컨텐츠 -->
+    <div class="review-content-wrapper">
 
-            <div class="match-right">
-              <p class="match-title">{{ matchTitle }}</p>
-              <p>장소 : {{ placeName }}</p>
-              <p>종류 : {{ typeName }}</p>
-            </div>
-          </section>
+      <!-- 제목 (박스 밖) -->
+      <h1 class="page-title">리뷰 등록</h1>
 
-          <!-- ===============================
-               리뷰 작성 영역
-          =============================== -->
-          <section class="review-edit-area">
-            <!-- 왼쪽 큰 이미지 -->
-            <div class="left-photo">
-              <div class="big-photo">
-                <img
-                    v-if="uploadedPhoto"
-                    :src="uploadedPhoto"
-                    class="big-photo-img"
-                />
-                <span v-else>대표 사진 없음</span>
-              </div>
+      <!-- 하얀 박스 본문 -->
+      <section class="review-content-box">
 
-              <div class="photo-buttons">
-                <el-button size="small" @click="fileInput.click()">
-                  사진 추가
-                </el-button>
-
-                <input
-                    ref="fileInput"
-                    type="file"
-                    accept="image/*"
-                    style="display:none"
-                    @change="onFileChange"
-                />
-              </div>
-            </div>
-
-            <!-- 오른쪽 입력 폼 -->
-            <div class="right-form">
-              <div class="rating-row">
-                <span class="rating-label">평점을 선택해주세요</span>
-                <el-rate v-model="rating" :max="5" />
-              </div>
-
-              <el-input
-                  v-model="reviewTitle"
-                  class="title-input"
-                  placeholder="제목을 입력해주세요"
-              />
-
-              <el-input
-                  v-model="reviewText"
-                  type="textarea"
-                  :rows="7"
-                  maxlength="500"
-                  show-word-limit
-                  placeholder="내용을 입력해주세요. 최대 500자까지 작성 가능합니다."
-              />
-            </div>
-          </section>
-
-          <!-- ===============================
-               등록 버튼
-          =============================== -->
-          <div class="submit-row">
-            <el-button type="primary" class="btn-save" @click="handleSave">
-              리뷰 등록
-            </el-button>
+        <!-- 상단 요약 박스 -->
+        <section class="match-summary">
+          <div class="thumb-box">
+            <img
+                v-if="pictureUrls.length > 0"
+                :src="pictureUrls[0]"
+                class="thumb-img"
+            />
+            <span v-else>사진 없음</span>
           </div>
 
-          <!-- ===============================
-               등록 성공 메시지
-          =============================== -->
-          <p v-if="successMessage" class="success-text">
-            {{ successMessage }}
-          </p>
-
+          <div class="match-right">
+            <p class="match-title">{{ matchTitle }}</p>
+            <p>장소 : {{ placeName }}</p>
+            <p>종류 : {{ typeName }}</p>
+          </div>
         </section>
-      </main>
+
+        <!-- 리뷰 작성 영역 -->
+        <section class="review-edit-area">
+          <div class="left-photo">
+            <div class="big-photo">
+              <img v-if="uploadedPhoto" :src="uploadedPhoto" class="big-photo-img" />
+              <span v-else>대표 사진 없음</span>
+            </div>
+
+            <div class="photo-buttons">
+              <el-button size="small" @click="fileInput.click()">
+                사진 추가
+              </el-button>
+
+              <input
+                  ref="fileInput"
+                  type="file"
+                  accept="image/*"
+                  style="display:none"
+                  @change="onFileChange"
+              />
+            </div>
+          </div>
+
+          <div class="right-form">
+            <div class="rating-row">
+              <span class="rating-label">평점을 선택해주세요</span>
+              <el-rate v-model="rating" :max="5" />
+            </div>
+
+            <el-input
+                v-model="reviewTitle"
+                class="title-input"
+                placeholder="제목을 입력해주세요"
+            />
+
+            <el-input
+                v-model="reviewText"
+                type="textarea"
+                :rows="7"
+                maxlength="500"
+                show-word-limit
+                placeholder="내용을 입력해주세요. 최대 500자까지 작성 가능합니다."
+            />
+          </div>
+        </section>
+
+        <!-- 등록 버튼 -->
+        <div class="submit-row">
+          <el-button type="primary" class="btn-save" @click="handleSave">
+            리뷰 등록
+          </el-button>
+        </div>
+
+        <!-- 성공 메시지 -->
+        <p v-if="successMessage" class="success-text">
+          {{ successMessage }}
+        </p>
+
+      </section>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 @import "@/assets/mypage/mypagerevieweidt.css";

@@ -20,9 +20,31 @@
 </template>
 
 <script setup>
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/authStore";
+
 import SidebarAdmin from '@/components/shared/sidebar/admin/SidebarAdmin.vue';
 import MemberListView from './MemberListView.vue';
 
+const router = useRouter();
+const authStore = useAuthStore();
+
+/* ============================
+    🔥 관리자 권한 체크
+=============================== */
+onMounted(async () => {
+  // JWT에서 사용자 정보 로드
+  await authStore.loadFromToken();
+
+  console.log("🔐 현재 사용자 role =", authStore.role);
+
+
+  if (authStore.role !== "ROLE_ADMIN") {
+    alert("관리자만 접근할 수 있습니다.");
+    return router.push("/");
+  }
+});
 </script>
 
 <style scoped>

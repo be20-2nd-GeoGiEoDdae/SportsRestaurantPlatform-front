@@ -1,41 +1,51 @@
-<!-- src/views/admin/KeywordNotice.vue -->
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/authStore";
+
 import SidebarAdmin from '@/components/shared/sidebar/admin/SidebarAdmin.vue'
 
+/* ============================
+    🔥 관리자 권한 체크
+=============================== */
+onMounted(async () => {
+  // JWT에서 사용자 정보 로드
+  await authStore.loadFromToken();
 
-// 새 알림 키워드 입력 값
-const newKeyword = ref('')
+  console.log("🔐 현재 사용자 role =", authStore.role);
 
-// 알림 키워드 목록 (더미 데이터)
+
+  if (authStore.role !== "ROLE_ADMIN") {
+    alert("관리자만 접근할 수 있습니다.");
+    return router.push("/");
+  }
+});
+
+// 키워드 입력
+const newKeyword = ref('');
 const keywords = ref([
   '관람 확정',
   '관람 취소',
   '쿠폰 발급',
   '공지 알림'
-])
+]);
 
-// 키워드 추가
 const addKeyword = () => {
-  const value = newKeyword.value.trim()
-  if (!value) return
+  const value = newKeyword.value.trim();
+  if (!value) return;
 
-  // 중복 방지 (원하면 이 부분 지워도 됨)
   if (keywords.value.includes(value)) {
-    newKeyword.value = ''
-    return
+    newKeyword.value = '';
+    return;
   }
+  keywords.value.push(value);
+  newKeyword.value = '';
+};
 
-  keywords.value.push(value)
-  newKeyword.value = ''
-}
-
-// 키워드 삭제
 const removeKeyword = (index) => {
-  keywords.value.splice(index, 1)
-}
+  keywords.value.splice(index, 1);
+};
 </script>
-
 <template>
   <div class="admin-page">
     <!-- 헤더 아래: 사이드바 + 본문 -->

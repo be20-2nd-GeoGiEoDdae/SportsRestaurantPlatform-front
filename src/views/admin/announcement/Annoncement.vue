@@ -1,7 +1,20 @@
 <!-- src/views/admin/announcement/Announcement.vue -->
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore'
 import SidebarAdmin from '@/components/shared/sidebar/admin/SidebarAdmin.vue'
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+onMounted(async () => {
+  await authStore.loadFromToken()
+  if (authStore.role !== 'ROLE_ADMIN') {
+    alert('관리자만 접근할 수 있습니다.')
+    router.push('/')
+  }
+})
 
 // 제목 검색어
 const searchTitle = ref('')

@@ -115,20 +115,15 @@
     </section>
 
     <!-- 페이지네이션 -->
-    <div class="pagination-area">
-      <Button class="page-btn" @click="prevPage" :disabled="page===1">&lt;</Button>
-
-      <Button
-          class="page"
-          v-for="n in totalPages"
-          :key="n"
-          :class="{ active: page === n }"
-          @click="goPage(n)"
-      >
-        {{ n }}
-      </Button>
-
-      <Button class="page-btn" @click="nextPage" :disabled="page===totalPages">&gt;</Button>
+    <div class="bottom-pagination">
+      <el-pagination
+          v-if="pageInfo"
+          :current-page="pageInfo?.page"
+          :page-size="pageInfo?.size"
+          :total="pageInfo?.totalElements"
+          layout="prev, pager, next"
+          @current-change="handlePageChange"
+      />
     </div>
 
     <!-- 하단 버튼 -->
@@ -159,6 +154,7 @@ import Input from "@/components/shared/basic/Input.vue";
 import Text from "@/components/shared/basic/Text.vue";
 import Label from "@/components/shared/basic/Label.vue";
 import ImageLightbox from "@/components/shared/imagebox/ImageLightbox.vue";
+import { ElPagination } from "element-plus";
 
 import "@/assets/restaurant/RestaurantListDetailedView.css";
 
@@ -215,20 +211,21 @@ const minus = () => count.value > 1 && count.value--;
 /* -----------------------------
     리뷰 페이징
 ----------------------------- */
-const page = ref(1);
-const size = 2;
+const pageInfo = ref({
+  page: 1,
+  size: 2,
+  totalElements: 0,
+});
 
-const totalPages = computed(() =>
-    Math.ceil(reviews.value.length / size)
-);
+const pagedReviews = computed(() => {
+  const start = (pageInfo.value.page - 1) * pageInfo.value.size;
+  const end = start + pageInfo.value.size;
+  return reviews.value.slice(start, end);
+});
 
-const pagedReviews = computed(() =>
-    reviews.value.slice((page.value - 1) * size, page.value * size)
-);
-
-const nextPage = () => page.value < totalPages.value && page.value++;
-const prevPage = () => page.value > 1 && page.value--;
-const goPage = (n) => page.value = n;
+const handlePageChange = (page) => {
+  pageInfo.value.page = page;
+};
 
 
 /* -----------------------------
@@ -236,7 +233,7 @@ const goPage = (n) => page.value = n;
 ----------------------------- */
 const sortByScore = () => {
   reviews.value.sort((a, b) => b.reviewScore - a.reviewScore);
-  page.value = 1;
+  pageInfo.value.page = 1;
 };
 
 
@@ -279,9 +276,17 @@ onMounted(async () => {
     /* ⭐ 리뷰 조회 */
     const res = await axios.get(`http://localhost:8080/api/reviews/restaurant/${id}`);
     reviews.value = res.data;
+    pageInfo.value.totalElements = reviews.value.length;
 
   } catch (err) {
     console.error("상세 조회 실패", err);
   }
 });
 </script>
+<style scoped>
+.bottom-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+</style>

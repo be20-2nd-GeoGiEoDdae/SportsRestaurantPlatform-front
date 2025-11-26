@@ -7,21 +7,23 @@ import { subscribeLogList } from "@/api/api.js";
 
 const tableData = ref([]);
 const currentRow = ref(null);
-const currentPage = ref(1);
-const pageSize = ref(10);
-const totalElements = ref(0);
+const pageInfo = ref({
+  page: 1,
+  size: 10,
+  totalElements: 0,
+});
 const loading = ref(false);
 const errorMessage = ref("");
 
 /** 구독 결제 내역 조회 */
-const loadingSubscribeLog = async () => {
+const loadingSubscribeLog = async (page = 1) => {
   loading.value = true;
   errorMessage.value = "";
 
   try {
     const res = await subscribeLogList(5,{
-      page:currentPage.value-1,
-      size:pageSize.value
+      page: page - 1,
+      size: pageInfo.value.size
     });
     const pageData=res.data.data;
 
@@ -33,8 +35,9 @@ const loadingSubscribeLog = async () => {
       endAt: log.entrepreneurSubscribeEndAt.substring(0, 10),
 
     }));
-    totalElements.value = pageData.totalElements;
-    pageSize.value = pageData.size;
+    pageInfo.value.totalElements = pageData.totalElements;
+    pageInfo.value.size = pageData.size;
+    pageInfo.value.page = page;
   } catch (e) {
     console.error(e);
     errorMessage.value = e.message || "구독 결제 내역 조회 중 오류가 발생했습니다.";
@@ -48,8 +51,7 @@ const handleCurrentChange = (row) => {
 };
 
 const handlePageChange = (page) => {
-  currentPage.value = page;
-  loadingSubscribeLog();
+  loadingSubscribeLog(page);
 };
 
 const editPaymentInfo = () => {
@@ -57,7 +59,7 @@ const editPaymentInfo = () => {
 };
 
 onMounted(() => {
-  loadingSubscribeLog();
+  loadingSubscribeLog(1);
 });
 </script>
 
@@ -137,11 +139,12 @@ onMounted(() => {
             </el-table>
           </div>
 
-          <div class="pagination-wrapper">
+          <div class="bottom-pagination">
             <el-pagination
-                :total="totalElements"
-                :page-size="pageSize"
-                :current-page="currentPage"
+                v-if="pageInfo"
+                :current-page="pageInfo?.page"
+                :page-size="pageInfo?.size"
+                :total="pageInfo?.totalElements"
                 layout="prev, pager, next"
                 @current-change="handlePageChange"
             />
@@ -154,4 +157,9 @@ onMounted(() => {
 
 <style scoped>
 @import "@/assets/mypage/mypagesubscribelog.css";
+.bottom-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
 </style>

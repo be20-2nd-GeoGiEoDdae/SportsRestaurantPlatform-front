@@ -1,33 +1,39 @@
 <template>
   <header class="navbar">
-    <!-- 왼쪽 로고 -->
     <div class="navbar-left">
-      <img :src="logo" alt="logo" class="logo" />
-      <h1 class="brand"></h1>
+      <router-link to="/welcome">
+        <img :src="logo" alt="logo" class="logo" style="cursor: pointer;" />
+      </router-link>
     </div>
 
-    <!-- 오른쪽: 메뉴 / 알림 / 유저 -->
     <nav class="navbar-right">
-      <!-- 가게 / 관람 메뉴 -->
+      <!-- 메뉴 -->
       <div class="menu-group">
-        <router-link to="/user/restaurant" custom v-slot="{ href, navigate, isActive }">
+        <router-link
+            to="/user/restaurant"
+            custom
+            v-slot="{ href, navigate, isActive }"
+        >
           <a :href="href" @click="navigate" class="menu-btn" :class="{ active: isActive }">
             가게
           </a>
         </router-link>
 
-        <router-link to="/user/viewing" custom v-slot="{ href, navigate, isActive }">
+        <router-link
+            to="/user/viewing"
+            custom
+            v-slot="{ href, navigate, isActive }"
+        >
           <a :href="href" @click="navigate" class="menu-btn" :class="{ active: isActive }">
             관람
           </a>
         </router-link>
       </div>
 
-      <!-- 알림 영역 -->
+      <!-- 알림 -->
       <div class="notify-area">
         <button class="bell" @click="alarmConnect">🔔</button>
 
-        <!-- 여기 박스가 10초 동안만 보임 -->
         <div v-if="currentNotice" class="notify-banner">
           {{ currentNotice }}
         </div>
@@ -35,84 +41,103 @@
 
       <!-- 유저 정보 -->
       <div class="user-section">
-        <router-link to="/MyPage/ProfileEdit" custom v-slot="{ href, navigate, isActive }">
-          <a :href="href" @click="navigate" class="menu-btn" :class="{ active: isActive }">
-        {{ userName }}님</a>
-        <span class="divider">/</span>
+        <router-link
+            v-if="userId"
+            to="/MyPage/ProfileEdit"
+            class="user-link"
+        >
+          {{ userName }}님
         </router-link>
-        <button class="logout-btn">로그아웃</button>
+
+        <span v-else>로그인</span>
+
+        <span class="divider">/</span>
+
+        <button class="logout-btn" @click="logout">로그아웃</button>
       </div>
     </nav>
   </header>
 </template>
 
 
+
 <script setup>
 import { onMounted, ref, onBeforeUnmount } from "vue";
+import { getAuthUser } from "@/utils/auth";   // JWT decode 유틸
+import { useRouter } from "vue-router";
 import logo from "@/assets/logo/logo.png";
 
-const userName = ref("----");
+const router = useRouter();
 
-// 전체 알림 로그 필요하면 유지
+const userName = ref("로그인 필요");
+const userId = ref(null);
+
 const notifications = ref([]);
-
-// 화면에 잠깐 보여줄 현재 알림 메시지
 const currentNotice = ref(null);
 
 let es = null;
 let hideTimer = null;
 
-const showNotification = (text) => {
-  // 히스토리용
-  notifications.value.unshift({
-    id: Date.now(),
-    text,
-  });
+// ⭐ 토큰에서 사용자 정보 불러오기
+onMounted(() => {
+  const info = getAuthUser();
+  if (info) {
+    userId.value = Number(info.sub);   // "21" → 21
+    userName.value = info.email;       // 이름 대신 email 사용(백엔드 구조상)
+  }
+});
 
-  // 상단 박스에 표시
+// 🔔 알림 10초 표시
+const showNotification = (text) => {
+  notifications.value.unshift({ id: Date.now(), text });
   currentNotice.value = text;
 
-  // 타이머 초기화 후 10초 뒤 숨기기
-  if (hideTimer) {
-    clearTimeout(hideTimer);
-  }
+  if (hideTimer) clearTimeout(hideTimer);
   hideTimer = setTimeout(() => {
     currentNotice.value = null;
-  }, 10000); // 10초
+  }, 10000);
 };
 
+// 🔔 SSE 연결 (userId 자동 반영)
 const alarmConnect = () => {
-  // 테스트용: 클릭하면 바로 박스가 뜨는지 확인
-  showNotification("테스트 알림입니다.");
+  if (!userId.value) {
+    alert("로그인이 필요합니다.");
+    return;
+  }
+
+  // 테스트 알림
+  showNotification("알림 연결 중입니다...");
 
   if (es && es.readyState === EventSource.OPEN) return;
 
-  es = new EventSource("http://localhost:8080/api/notification/connections/6");
+  es = new EventSource(
+      `http://localhost:8080/api/notification/connections/${userId.value}`
+  );
 
   es.addEventListener("sse", (event) => {
     const payload = event.data;
     console.log("알림 도착:", payload);
-
-    showNotification(payload);   // 일단 필터 없이 그대로 보여주기
+    showNotification(payload);
   });
 
   es.onerror = (err) => {
-    console.error("SSE 에러", err);
+    console.error("SSE Error:", err);
   };
 };
 
-onMounted(() => {
-  // 처음부터 자동 연결하고 싶으면 여기서 alarmConnect() 호출
-  // alarmConnect();
-});
+// ⭐ 로그아웃 처리
+const logout = () => {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  userId.value = null;
+  userName.value = "로그인 필요";
+
+  router.push("/welcome"); // 로그인 페이지로 이동
+};
 
 onBeforeUnmount(() => {
-  if (es) {
-    es.close();
-  }
-  if (hideTimer) {
-    clearTimeout(hideTimer);
-  }
+  if (es) es.close();
+  if (hideTimer) clearTimeout(hideTimer);
 });
 </script>
 

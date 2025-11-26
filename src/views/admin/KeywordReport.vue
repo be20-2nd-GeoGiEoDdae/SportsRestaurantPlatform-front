@@ -1,38 +1,49 @@
-<!-- src/views/admin/KeywordReport.vue -->
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/authStore";
+
 import SidebarAdmin from '@/components/shared/sidebar/admin/SidebarAdmin.vue'
 
-// 새 키워드 입력 값
-const newKeyword = ref('')
+const router = useRouter();
+const authStore = useAuthStore();
 
-// 키워드 목록 (더미 데이터)
-const keywords = ref([
-  '불친절',
-  '사기',
-  '위생 불량'
-])
+/* ============================
+    🔥 관리자 권한 체크
+=============================== */
+onMounted(async () => {
+  // JWT에서 사용자 정보 로드
+  await authStore.loadFromToken();
 
-// 키워드 추가
-const addKeyword = () => {
-  const value = newKeyword.value.trim()
-  if (!value) return
+  console.log("🔐 현재 사용자 role =", authStore.role);
 
-  // 이미 있는 키워드는 중복 추가 안 함 (원하면 이 줄 지워도 됨)
-  if (keywords.value.includes(value)) {
-    newKeyword.value = ''
-    return
+
+  if (authStore.role !== "ROLE_ADMIN") {
+    alert("관리자만 접근할 수 있습니다.");
+    return router.push("/");
   }
+});
 
-  keywords.value.push(value)
-  newKeyword.value = ''
-}
+const newKeyword = ref('');
+const keywords = ref(['불친절', '사기', '위생 불량']);
 
-// 키워드 삭제
+const addKeyword = () => {
+  const value = newKeyword.value.trim();
+  if (!value) return;
+
+  if (keywords.value.includes(value)) {
+    newKeyword.value = '';
+    return;
+  }
+  keywords.value.push(value);
+  newKeyword.value = '';
+};
+
 const removeKeyword = (index) => {
-  keywords.value.splice(index, 1)
-}
+  keywords.value.splice(index, 1);
+};
 </script>
+
 
 <template>
   <div class="admin-page">

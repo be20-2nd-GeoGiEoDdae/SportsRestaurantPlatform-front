@@ -48,7 +48,7 @@ export const userViewingReservation= async (viewingDto)=>{
 // api.js
 export const entrepreneurChangeUserRole = async (userId, newRole) => {
   const res = await api.patch(
-      `/api/admin/users/${userId}/role`,  // ✅ 여기서는 /api 붙이지 않음
+      `/api/users/${userId}/role`,  // ✅ 여기서는 /api 붙이지 않음
       null,                           // ✅ body 없음
       {
         params: {                     // ✅ @RequestParam 으로 넘어감
@@ -59,4 +59,11 @@ export const entrepreneurChangeUserRole = async (userId, newRole) => {
 
   return res.data;                  // 토큰 필요하면 반환
 };
+
+// 유저 상세 조회
+export const getUserDetail = async (userCode) => {
+    const res = await api.get(`/api/admin/users/${userCode}`);
+    return res.data.data; // ApiResponse.success(data)
+};
+
 

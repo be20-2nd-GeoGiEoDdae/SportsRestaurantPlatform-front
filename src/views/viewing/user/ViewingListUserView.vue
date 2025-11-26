@@ -114,10 +114,15 @@
 
 
       <!-- 페이지 -->
-      <div class="pagination-box">
-        <Button class="page-btn" @click="prevPage">&lt;</Button>
-        <Button class="page-number active">{{ page }}</Button>
-        <Button class="page-btn" @click="nextPage">&gt;</Button>
+      <div class="bottom-pagination">
+        <el-pagination
+            v-if="pageInfo"
+            :current-page="pageInfo?.page"
+            :page-size="pageInfo?.size"
+            :total="pageInfo?.totalElements"
+            layout="prev, pager, next"
+            @current-change="handlePageChange"
+        />
       </div>
 
 
@@ -133,6 +138,7 @@ import Slider from "@/components/shared/form/Slider.vue";
 import Button from "@/components/shared/basic/Button.vue";
 import Text from "@/components/shared/basic/Text.vue";
 import Label from "@/components/shared/basic/Label.vue";
+import { ElPagination } from "element-plus";
 
 import "@/assets/viewing/ViewingListView.css";
 
@@ -177,13 +183,13 @@ const toggleKeyword = (val) => {
   } else {
     selectedKeywords.value.push(val);
   }
-  page.value = 1;
+  pageInfo.value.page = 1;
   loadViewings();
 };
 
 const clearKeywords = () => {
   selectedKeywords.value = [];
-  page.value = 1;
+  pageInfo.value.page = 1;
   loadViewings();
 };
 
@@ -216,8 +222,11 @@ const loadKeywords = async () => {
 
 const viewingList = ref([]);
 const sort = ref("distance");
-const page = ref(1);
-const size = 5;
+const pageInfo = ref({
+  page: 1,
+  size: 5,
+  totalElements: 0,
+});
 
 const userLat = ref(null);
 const userLng = ref(null);
@@ -240,19 +249,19 @@ const toggleSortMenu = () => (showSortMenu.value = !showSortMenu.value);
 const selectSort = (type) => {
   showSortMenu.value = false;
   sort.value = type;
-  page.value = 1;
+  pageInfo.value.page = 1;
   loadViewings();
 };
 
 /* 음식 */
 const toggleFood = (item) => {
   selectedFoods.value = [item];
-  page.value = 1;
+  pageInfo.value.page = 1;
   loadViewings();
 };
 
 /* 메인 API */
-const loadViewings = async () => {
+const loadViewings = async (page = 1) => {
   try {
     const res = await axios.get("http://localhost:8080/api/viewings", {
       params: {
@@ -263,8 +272,8 @@ const loadViewings = async () => {
         keywords:
             selectedKeywords.value.length > 0 ? selectedKeywords.value : null,
         sort: sort.value,
-        page: page.value - 1,
-        size,
+        page: page - 1,
+        size: pageInfo.value.size,
         lat: userLat.value,
         lng: userLng.value
       }
@@ -274,10 +283,17 @@ const loadViewings = async () => {
       ...v,
       pictureUrl: getImageUrl(v.pictureUrl)
     }));
+    pageInfo.value.totalElements = res.data.totalElements;
+    pageInfo.value.page = page;
 
   } catch (e) {
     console.error("조회 실패:", e);
   }
+};
+
+/* 페이징 */
+const handlePageChange = (page) => {
+  loadViewings(page);
 };
 
 /* 위치 갱신 */
@@ -290,19 +306,6 @@ const refreshLocation = () => {
       },
       () => alert("위치 권한이 필요합니다!")
   );
-};
-
-/* 페이징 */
-const nextPage = () => {
-  page.value++;
-  loadViewings();
-};
-
-const prevPage = () => {
-  if (page.value > 1) {
-    page.value--;
-    loadViewings();
-  }
 };
 
 /* 초기 실행 */
@@ -319,3 +322,11 @@ onMounted(() => {
 });
 </script>
 
+<style scoped>
+@import "@/assets/viewing/ViewingListView.css";
+.bottom-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+</style>

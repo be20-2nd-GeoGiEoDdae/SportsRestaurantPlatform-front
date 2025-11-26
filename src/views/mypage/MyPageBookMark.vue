@@ -1,73 +1,76 @@
 
 <script setup>
-  import { ref, computed } from "vue";
+  import { ref, computed, onMounted } from "vue";
   import SidebarUser from "@/components/shared/sidebar/user/SidebarUser.vue";
 
-  const favorites = ref([
-  {
-    id: 1,
-    name: "모스 키친",
-    type: "양식",
-    location: "서울시 동작구",
-    rating: 4.8,
-  },
-  {
-    id: 2,
-    name: "모스 키친",
-    type: "양식",
-    location: "서울시 동작구",
-    rating: 4.8,
-  },
-  {
-    id: 3,
-    name: "모스 키친",
-    type: "양식",
-    location: "서울시 동작구",
-    rating: 4.8,
-  },
-  ]);
-
-  // 그냥 ref([])만
+  const favorites = ref([]);
   const selectedIds = ref([]);
-  const currentPage = ref(1);
+  
+  const pageInfo = ref({
+    page: 1,
+    size: 10,
+    totalElements: 0,
+  });
+
+  const allFavorites = ref([
+    ...Array(25).keys(),
+  ].map((i) => ({
+    id: i + 1,
+    name: `모스 키친 ${i + 1}`,
+    type: "양식",
+    location: "서울시 동작구",
+    rating: 4.8,
+  })));
+
+  const fetchFavorites = (page = 1) => {
+    const start = (page - 1) * pageInfo.value.size;
+    const end = start + pageInfo.value.size;
+    favorites.value = allFavorites.value.slice(start, end);
+    pageInfo.value.totalElements = allFavorites.value.length;
+    pageInfo.value.page = page;
+  };
 
   /** 전체 체크 / 해제 */
   const allChecked = computed({
-  get() {
-  return (
-  favorites.value.length > 0 &&
-  selectedIds.value.length === favorites.value.length
-  );
-},
-  set(val) {
-  selectedIds.value = val ? favorites.value.map((f) => f.id) : [];
-},
-});
+    get() {
+      return (
+        favorites.value.length > 0 &&
+        selectedIds.value.length === favorites.value.length
+      );
+    },
+    set(val) {
+      selectedIds.value = val ? favorites.value.map((f) => f.id) : [];
+    },
+  });
 
   const handleDeleteSelected = () => {
-  if (!selectedIds.value.length) return;
+    if (!selectedIds.value.length) return;
 
-  favorites.value = favorites.value.filter(
-  (f) => !selectedIds.value.includes(f.id)
-  );
-  selectedIds.value = [];
-};
+    allFavorites.value = allFavorites.value.filter(
+      (f) => !selectedIds.value.includes(f.id)
+    );
+    fetchFavorites(pageInfo.value.page);
+    selectedIds.value = [];
+  };
 
   const handleDeleteOne = (fav) => {
-  favorites.value = favorites.value.filter((f) => f.id !== fav.id);
-  selectedIds.value = selectedIds.value.filter((id) => id !== fav.id);
-};
+    allFavorites.value = allFavorites.value.filter((f) => f.id !== fav.id);
+    fetchFavorites(pageInfo.value.page);
+    selectedIds.value = selectedIds.value.filter((id) => id !== fav.id);
+  };
 
   const handleGoToStore = (fav) => {
-  console.log("바로가기:", fav);
-  // TODO: 상세 페이지 라우팅
-};
+    console.log("바로가기:", fav);
+    // TODO: 상세 페이지 라우팅
+  };
 
   const handlePageChange = (page) => {
-  currentPage.value = page;
-  console.log("페이지 변경:", page);
-  // TODO: 서버 페이징 연동
-};
+    fetchFavorites(page);
+  };
+
+  onMounted(() => {
+    fetchFavorites(1);
+  });
 </script>
 
 <template>
@@ -155,11 +158,12 @@
             </article>
           </div>
 
-          <div class="pagination-wrapper">
+          <div class="bottom-pagination">
             <el-pagination
-                :total="100"
-                :page-size="10"
-                :current-page="currentPage"
+                v-if="pageInfo"
+                :current-page="pageInfo?.page"
+                :page-size="pageInfo?.size"
+                :total="pageInfo?.totalElements"
                 layout="prev, pager, next"
                 @current-change="handlePageChange"
             />
@@ -171,5 +175,12 @@
 </template>
 
 <style scoped>
+/* 기존 CSS 파일 내용을 여기에 붙여넣고, bottom-pagination 스타일을 추가합니다. */
 @import "@/assets/mypage/mypagebookmark.css";
+
+.bottom-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
 </style>

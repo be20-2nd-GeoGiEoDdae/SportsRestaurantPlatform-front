@@ -133,6 +133,7 @@
 import { ref, onMounted, computed, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
+import { useAuthStore } from "@/stores/authStore";
 
 import Button from "@/components/shared/basic/Button.vue";
 import Input from "@/components/shared/basic/Input.vue";
@@ -144,6 +145,7 @@ import "@/assets/viewing/ViewingListDetailedView.css";
 import {userViewingReservation} from "@/api/api.js";
 
 const route = useRoute();
+const authStore = useAuthStore();
 const viewingId = computed(() => route.params.id);
 
 /* ====== 기본 데이터 ====== */
@@ -289,8 +291,8 @@ const requestPayment = async () => {
   try {
 
     const reservationDto = {
-      viewingCode: 3,          // 또는 route.params.viewingCode
-      userCode: 6,                       // TODO: 실제 로그인 유저 코드로 대체       // 예약 인원
+      viewingCode: viewingId.value, // 동적으로 관람 ID 사용
+      userCode: authStore.userId,   // 동적으로 사용자 ID 사용
       viewingPayPrice: totalPrice.value,          // 총 금액
     };
 
@@ -322,7 +324,8 @@ const requestPayment = async () => {
 /* ====== 서버 요청 ====== */
 /* ====== 서버 조회 ====== */
 onMounted(async () => {
-  const viewingId = 3; // 실제 라우터 파라미터 등으로 교체
+  authStore.loadFromToken();
+  // viewingId는 이미 상단에서 computed로 선언됨
   const { data: d } = await axios.get(`http://localhost:8080/api/viewings/${viewingId.value}`);
 
   storeName.value = d.restaurantName;

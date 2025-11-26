@@ -4,22 +4,24 @@ import { ref, onMounted } from "vue";
 import SidebarUser from "@/components/shared/sidebar/user/SidebarUser.vue";
 import { viewingPayList } from "@/api/api.js";
 
-const currentPage = ref(1);
-const pageSize = ref(10);
 const loading = ref(false);
 const errorMessage = ref("");
 const payments = ref([]);
-const totalElements = ref(0);
+const pageInfo = ref({
+  page: 1,
+  size: 10,
+  totalElements: 0,
+});
 
-const loadViewingPayLog = async () => {
+const loadViewingPayLog = async (page = 1) => {
 
   loading.value = true;
   errorMessage.value = "";
 
   try {
     const res = await viewingPayList(1, {
-      page: currentPage.value - 1, // ✅ Spring은 0부터, UI는 1부터라 -1
-      size: pageSize.value,
+      page: page - 1, // ✅ Spring은 0부터, UI는 1부터라 -1
+      size: pageInfo.value.size,
     });
     const pageData = res.data.data;
 
@@ -38,8 +40,9 @@ const loadViewingPayLog = async () => {
       paidAt: log.createdAt.substring(0, 10),
     }));
 
-    totalElements.value = pageData.totalElements;
-    pageSize.value = pageData.size; // 서버에서 size를 바꿀 수도 있으니 동기화
+    pageInfo.value.totalElements = pageData.totalElements;
+    pageInfo.value.size = pageData.size; // 서버에서 size를 바꿀 수도 있으니 동기화
+    pageInfo.value.page = page;
   } catch (e) {
     console.error(e);
     errorMessage.value = e.message || "결제 목록 조회 중 오류가 발생했습니다.";
@@ -49,12 +52,11 @@ const loadViewingPayLog = async () => {
 }
 
 const handlePageChange = (page) => {
-  currentPage.value = page;
-  loadViewingPayLog();
+  loadViewingPayLog(page);
 };
 
 onMounted(() => {
-  loadViewingPayLog();
+  loadViewingPayLog(1);
 });
 </script>
 
@@ -127,11 +129,12 @@ onMounted(() => {
           </div>
 
           <!-- 페이지네이션 -->
-          <div class="pagination-wrapper">
+          <div class="bottom-pagination">
             <el-pagination
-                :total="totalElements"
-                :page-size="pageSize"
-                :current-page="currentPage"
+                v-if="pageInfo"
+                :current-page="pageInfo?.page"
+                :page-size="pageInfo?.size"
+                :total="pageInfo?.totalElements"
                 layout="prev, pager, next"
                 @current-change="handlePageChange"
             />
@@ -144,4 +147,9 @@ onMounted(() => {
 
 <style scoped>
 @import "@/assets/mypage/mypageviewingpaylog.css";
+.bottom-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
 </style>
