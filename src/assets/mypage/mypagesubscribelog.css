@@ -1,49 +1,53 @@
-/* ===== 고정 캔버스 ===== */
-.viewport {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
+/* RestaurantManage.vue 와 거의 같은 레이아웃/톤 */
 
-.canvas {
-  width: 1024px;
-  height: 768px;
-  transform-origin: top left;
-}
-
-/* ===== 페이지 레이아웃 ===== */
-.history-page {
-  height: 100%;
-  background: #ffffff;
+/* 페이지 전체 래퍼 */
+.sublog-page {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #f5f5f5;
 }
 
-
-/* 메인 영역 */
-.main-layout {
-  flex: 1;
+/* 사이드바 + 컨텐츠 래퍼 */
+.sublog-body {
   display: flex;
-}
-
-/* 왼쪽 메뉴 */
-
-
-/* 오른쪽 내용 */
-.history-main {
   flex: 1;
-  padding: 32px 40px;
-  background: #ffffff;
 }
 
-.history-header {
-  margin-bottom: 12px;
+/* 왼쪽 사이드바 */
+.sublog-sidebar {
+  width: 200px;
+  background-color: #ffffff;
+  border-right: 1px solid #e9ecef;
+  flex-shrink: 0;
 }
 
-.history-title {
-  font-size: 20px;
+/* 오른쪽 컨텐츠 */
+.sublog-content {
+  flex: 1;
+  padding: 30px 40px 40px;
+  background-color: #f6f6f6;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* 타이틀 */
+.page-title {
+  font-size: 22px;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
+}
+
+/* 상단 안내 카드 */
+.header-section {
+  margin-bottom: 16px;
+}
+
+.header-card {
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  background-color: #ffffff;
+  padding: 12px 16px;
 }
 
 .next-billing {
@@ -51,12 +55,21 @@
   color: #606266;
 }
 
+/* 테이블 섹션 (RestaurantManage 의 table-section 참고) */
+.table-section {
+  border: 1px solid #dee2e6;
+  background-color: #ffffff;
+  padding: 16px 20px 24px;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
 /* 테이블 헤더 영역 (우측 버튼) */
 .table-header {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin: 12px 0 8px;
+  margin-bottom: 8px;
 }
 
 .edit-pay-btn {
@@ -68,10 +81,22 @@
   font-size: 12px;
 }
 
-/* 테이블 */
+/* el-table 래퍼: 작은 화면에서 가로 스크롤만 허용 */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* el-table 스타일 */
+.history-table {
+  width: 100%;
+  min-width: 700px; /* 컬럼이 너무 찌그러지지 않게 최소 너비만 지정 */
+}
+
 .history-table :deep(.el-table__header-wrapper th) {
   background: #dde7f6;
   text-align: center;
+  font-weight: 600;
 }
 
 .history-table :deep(.el-table__row) {

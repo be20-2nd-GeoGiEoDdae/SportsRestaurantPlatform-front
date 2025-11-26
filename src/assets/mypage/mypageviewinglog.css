@@ -33,25 +33,25 @@
 
 /* 상태 라벨 */
 .status-label {
+  display: flex;                /* 🔹 텍스트와 날짜를 양쪽 끝으로 */
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;           /* 🔹 상하좌우 여백 통일 */
   font-size: 18px;
   font-weight: bold;
 }
-.date{
+.date {
   display: inline-block;
-  float: right;
-  padding-right: 20px;
-  color : #000000;
+  margin-left: 8px;
+  color: #000000;
+  padding-right: 0;             /* 필요 없어서 제거해도 됨 */
 }
 
 .status-label.done {
-  padding-top: 10px;
-  padding-left: 15px;
   color: #6D94C5;
 }
 
 .status-label.wait {
-  padding-left: 15px;
-  padding-top: 10px;
   color: #ff8c00;
 }
 
@@ -240,4 +240,19 @@
 
 .btn-submit {
   min-width: 90px;
+}
+.thumb-img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+/* 관람 키워드 + 카드들을 감싸는 하얀 박스 */
+.history-section {
+  margin-top: 16px;
+  border: 1px solid #dee2e6;
+  background-color: #ffffff;
+  padding: 16px 20px 24px;
+  border-radius: 8px;
+  box-sizing: border-box;
 }

@@ -26,7 +26,6 @@ import KeywordNotice from "@/views/admin/KeywordNotice.vue";
 import Announcement from "@/views/admin/announcement/Annoncement.vue";
 import KeywordRestaurant from "@/views/admin/KeywordRestaurant.vue";
 import KeywordSports from "@/views/admin/KeywordSports.vue";
-import MyPageProfileEdit from "@/views/mypage/MyPageProfileEdit.vue";
 import ReservationView from "@/views/reservation/ReservationView.vue";
 import AnnouncementsListView from "@/views/announcement/AnnouncementsListView.vue";
 import AnnouncementsDetailView from "@/views/announcement/AnnouncementsDetailView.vue";
@@ -34,6 +33,9 @@ import RestaurantListDetailedUserView from "@/views/restaurant/user/RestaurantLi
 import RestaurantListUserView from "@/views/restaurant/user/RestaurantListUserView.vue";
 import ViewingListUserView from "@/views/viewing/user/ViewingListUserView.vue";
 import ViewingListDetailedUserView from "@/views/viewing/user/ViewingListDetailedUserView.vue";
+import MyPageProfileEdit from "@/views/mypage/MyPageProfileEdit.vue";
+import MyPageSubscribeSuccess from "@/views/mypage/MyPageSubscribeSuccess.vue";
+import ViewingPaySuccess from "@/views/viewing/ViewingPaySuccess.vue";
 const routes = [
     {path: '/entrepreneur/restaurant/register', name: 'RestaurantRegister', component: RestaurantRegisterView},
     {path: '/entrepreneur/restaurant', name: 'RestaurantListEntrepreneur',component: RestaurantListView},
@@ -49,6 +51,13 @@ const routes = [
 
 
     {path:'/MyPage/ProfileEdit',name:'MyPage-ProfileEdit',component:MyPageProfileEdit},
+    {path: '/restaurant/register', name: 'RestaurantRegister', component: RestaurantRegisterView},
+    {path: '/restaurant', name: 'RestaurantList',component: RestaurantListView},
+    {path: '/restaurant/detailed/:id', name: 'RestaurantListDetailed',component: RestaurantListDetailedView},
+    {path: '/viewing/register', name: 'ViewingRegister',component: ViewingRegisterView},
+    {path: '/viewing', name: 'ViewingList',component: ViewingListView},
+    {path: '/viewing/detailed/:id', name: 'ViewingListDetailed',component: ViewingListDetailedView},
+    {path:'/MyPage/ProfileEdit',name:'MyPage-ProfileEdit',component:MyPageProfileEdit},
     {path:'/MyPage/ViewingLog',name:'MyPage-ViewingLog',component:MyPageViewingLog},
     {path:'/MyPage/Subscribe/Cancel',name:'MyPage-SubscribeCancel',component:MyPageSubscribeCancel},
     {path:'/MyPage/Subscribe/CancelConfirm',name:'MyPage-SubscribeCancelConfirm',component:MyPageSubscribeCancelConfirm},
@@ -62,6 +71,9 @@ const routes = [
     {path:'/viewing/reservation',name:'ReservationView',component: ReservationView},
     {path:'/announcement',name:'AnnouncementListView',component: AnnouncementsListView},
     {path:'/announcement/:id',name:'AnnouncementDetailView',component: AnnouncementsDetailView},
+    {path:'/MyPage/Subscribe/Success',name:'MyPage-SubscribeSuccess',component:MyPageSubscribeSuccess},
+    {path:'/viewing/pay/success',name:'Viewing-PaySuccess',component:ViewingPaySuccess},
+
     {
         path: '/ComponentSample',               // http://localhost:5173/ComponentSample
         name: 'ComponentSample',

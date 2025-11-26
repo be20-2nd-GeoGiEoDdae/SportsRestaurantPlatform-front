@@ -1,23 +1,37 @@
 <!-- SubscriptionCancel.vue -->
 <script setup>
-const handleCancelSubscribe = () => {
-  // TODO: 구독 해지 API 호출
-  console.log("구독 결제 해지");
+import { useRouter } from "vue-router";
+import {subscribeCancel} from "@/api/api.js";
+import {ref} from "vue";
+
+const loading=ref(false);
+const router = useRouter();
+
+const handleCancelSubscribe = async () => {
+  // TODO: 구독 해지 API 호출 + 성공 시 완료 페이지로 이동 등
+  loading.value = true;
+  try {
+    const res = await subscribeCancel(2);//entrepreneurCode);
+    if (res !== '삭제 성공') {
+      throw new Error(res || '삭제 실패');
+    }
+    await router.replace({ name: 'MyPage-SubscribeCancelConfirm' });
+  }catch (e){
+    console.log(e);
+    console.log('구독 결제 해지 오류 발생')
+  }finally{
+    loading.value=false;
+  }
 };
 
 const goToMain = () => {
-  // TODO: 메인 페이지로 라우팅
-  // e.g. useRouter().push("/");
-  console.log("메인 페이지로 이동");
+  // 메인 페이지로 라우팅
+  router.push("/");
 };
 </script>
 
 <template>
-  <div class="viewport">
-    <div class="canvas">
-
   <div class="cancel-page">
-
     <!-- 메인 영역 -->
     <main class="main-area">
       <el-card class="cancel-card" shadow="never">
@@ -59,8 +73,6 @@ const goToMain = () => {
         </div>
       </el-card>
     </main>
-  </div>
-    </div>
   </div>
 </template>
 

@@ -1,55 +1,47 @@
-<!-- SubscriptionHistory.vue -->
+<!-- src/views/entrepreneur/SubscriptionHistory.vue -->
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted } from "vue";
 import SidebarEntrepreneur from "@/components/shared/sidebar/entrepreneur/SidebarEntrepreneur.vue";
+import router from "@/router/index.js";
+import { subscribeLogList } from "@/api/api.js";
 
-const tableData = ref([
-  {
-    id: 1,
-    productCode: "SEFP33_1322FA5",
-    amount: "123,000원",
-    planName: "서빙형 정기 결제",
-    paidAt: "2025/12/03",
-  },
-  {
-    id: 2,
-    productCode: "SEFP33_1322FA5",
-    amount: "123,000원",
-    planName: "서빙형 정기 결제",
-    paidAt: "2025/11/03",
-  },
-  {
-    id: 3,
-    productCode: "SEFP33_1322FA5",
-    amount: "123,000원",
-    planName: "서빙형 정기 결제",
-    paidAt: "2025/10/03",
-  },
-  {
-    id: 4,
-    productCode: "SEFP33_1322FA5",
-    amount: "123,000원",
-    planName: "서빙형 정기 결제",
-    paidAt: "2025/09/03",
-  },
-  {
-    id: 5,
-    productCode: "SEFP33_1322FA5",
-    amount: "123,000원",
-    planName: "서빙형 정기 결제",
-    paidAt: "2025/08/03",
-  },
-  {
-    id: 6,
-    productCode: "SEFP33_1322FA5",
-    amount: "123,000원",
-    planName: "서빙형 정기 결제",
-    paidAt: "2025/07/03",
-  },
-]);
-
+const tableData = ref([]);
 const currentRow = ref(null);
 const currentPage = ref(1);
+const pageSize = ref(10);
+const totalElements = ref(0);
+const loading = ref(false);
+const errorMessage = ref("");
+
+/** 구독 결제 내역 조회 */
+const loadingSubscribeLog = async () => {
+  loading.value = true;
+  errorMessage.value = "";
+
+  try {
+    const res = await subscribeLogList(5,{
+      page:currentPage.value-1,
+      size:pageSize.value
+    });
+    const pageData=res.data.data;
+
+    tableData.value = pageData.content.map((log, idx) => ({
+      id: idx + 1, // 또는 log.entrepreneurSubscribeOrderId 사용
+      orderId: log.entrepreneurSubscribeOrderId,
+      amount: `${log.entrepreneurSubscribePayment.toLocaleString()}원`,
+      createAt: log.entrepreneurSubscribeUpdatedAt.substring(0, 10),
+      endAt: log.entrepreneurSubscribeEndAt.substring(0, 10),
+
+    }));
+    totalElements.value = pageData.totalElements;
+    pageSize.value = pageData.size;
+  } catch (e) {
+    console.error(e);
+    errorMessage.value = e.message || "구독 결제 내역 조회 중 오류가 발생했습니다.";
+  } finally {
+    loading.value = false;
+  }
+};
 
 const handleCurrentChange = (row) => {
   currentRow.value = row;
@@ -57,112 +49,105 @@ const handleCurrentChange = (row) => {
 
 const handlePageChange = (page) => {
   currentPage.value = page;
-  // TODO: 서버에서 해당 페이지 데이터 가져오기
-};
-
-const goMain = () => {
-  // TODO: 메인 페이지로 이동 (vue-router 사용 시)
-  console.log("메인 페이지로 이동");
+  loadingSubscribeLog();
 };
 
 const editPaymentInfo = () => {
-  // TODO: 결제 정보 수정 화면 이동
-  console.log("결제 정보 수정");
-};
-
-/* ===== 고정 캔버스 스케일링 ===== */
-const baseWidth = 1024;
-const baseHeight = 768;
-const canvasRef = ref(null);
-
-const updateScale = () => {
-  const el = canvasRef.value;
-  if (!el) return;
-
-  const scale = Math.min(
-      window.innerWidth / baseWidth,
-      window.innerHeight / baseHeight
-  );
-  el.style.transform = `scale(${scale})`;
+  router.push({ name: "MyPage-SubscribeCancel" });
 };
 
 onMounted(() => {
-  updateScale();
-  window.addEventListener("resize", updateScale);
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener("resize", updateScale);
+  loadingSubscribeLog();
 });
 </script>
 
 <template>
-  <div class="viewport">
-    <div class="canvas" ref="canvasRef">
-      <div class="history-page">
+  <div class="sublog-page">
+    <div class="sublog-body">
+      <!-- 왼쪽 사이드바 -->
+      <aside class="sublog-sidebar">
+        <SidebarEntrepreneur />
+      </aside>
 
-        <!-- 본문 -->
-        <div class="main-layout">
-          <aside class="side-menu">
-            <sidebar-entrepreneur/>
-          </aside>
-          <!-- 왼쪽 메뉴 -->
+      <!-- 오른쪽 컨텐츠 -->
+      <main class="sublog-content">
+        <h1 class="page-title">내 구독 결제 내역</h1>
 
+        <!-- 상단 안내 카드 -->
+        <section class="header-section">
+          <div class="header-card">
+            <p class="next-billing">
+              다음 정기 결제 예정일은
+              <strong>2025년 1월 03일</strong>
+              입니다.
+            </p>
+          </div>
+        </section>
 
-          <!-- 오른쪽 내용 -->
-          <main class="history-main">
-            <div class="history-header">
-              <h2 class="history-title">내 구독 결제 내역</h2>
-              <p class="next-billing">
-                다음 정기 결제 예정일은 <strong>2025년 1월 03일</strong> 입니다.
-              </p>
-            </div>
+        <!-- 에러 / 로딩 -->
+        <p v-if="loading">로딩 중...</p>
+        <p v-else-if="errorMessage" class="error-text">
+          {{ errorMessage }}
+        </p>
 
-            <div class="table-header">
-              <div class="table-header-spacer" />
-              <el-button
-                  size="small"
-                  class="edit-pay-btn"
-                  @click="editPaymentInfo"
-              >
-                결제 정보 수정
-              </el-button>
-            </div>
+        <!-- 테이블 영역 -->
+        <section class="table-section">
+          <div class="table-header">
+            <el-button
+                size="small"
+                class="edit-pay-btn"
+                @click="editPaymentInfo"
+            >
+              구독 결제 해지
+            </el-button>
+          </div>
 
+          <div class="table-wrapper">
             <el-table
                 class="history-table"
                 :data="tableData"
                 border
                 highlight-current-row
+                v-loading="loading"
                 @current-change="handleCurrentChange"
             >
               <el-table-column
-                  prop="productCode"
-                  label="상품 번호"
-                  width="220"
+                  prop="orderId"
+                  label="주문 번호"
+                  min-width="220"
               />
-              <el-table-column prop="amount" label="금액" width="120" />
-              <el-table-column prop="planName" label="상품 내용" />
               <el-table-column
-                  prop="paidAt"
+                  prop="amount"
+                  label="결제 금액"
+                  min-width="120"
+                  align="center"
+              />
+              <el-table-column
+                  prop="createAt"
                   label="결제일"
-                  width="140"
+                  min-width="140"
+                  align="center"
+              />
+              <el-table-column
+                  prop="endAt"
+                  label="구독 종료일"
+                  min-width="140"
                   align="center"
               />
             </el-table>
+          </div>
 
-            <div class="pagination-wrapper">
-              <el-pagination
-                  :total="100"
-                  :page-size="10"
-                  :current-page="currentPage"
-                  layout="prev, pager, next"
-                  @current-change="handlePageChange"
-              />
-            </div>
-          </main>
-        </div>
-      </div>
+          <div class="pagination-wrapper">
+            <el-pagination
+                :total="totalElements"
+                :page-size="pageSize"
+                :current-page="currentPage"
+                layout="prev, pager, next"
+                @current-change="handlePageChange"
+            />
+          </div>
+        </section>
+      </main>
     </div>
   </div>
 </template>

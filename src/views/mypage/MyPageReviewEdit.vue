@@ -4,6 +4,7 @@ import axios from "axios";
 import { useRouter } from "vue-router";
 import SidebarUser from "@/components/shared/sidebar/user/SidebarUser.vue";
 
+const route = useRoute();
 const router = useRouter();
 
 // ===============================

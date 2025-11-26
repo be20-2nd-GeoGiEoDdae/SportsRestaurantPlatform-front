@@ -135,7 +135,7 @@ const getImageUrl = (path) => {
    가게 사진 불러오기
 ------------------------------- */
 
-const restaurantId = 1;
+const restaurantId = 2;//
 
 const previewMain = ref(null);
 const previewSub = ref([]);
