@@ -1,11 +1,12 @@
-
+/* 전체 페이지 레이아웃 (viewport/canvas 없이 전체 화면 기준) */
 .cancel-page {
   min-height: 100vh;
   background: #f2f2f2;
   display: flex;
   flex-direction: column;
 }
-/* 메인 */
+
+/* 메인 영역 */
 .main-area {
   flex: 1;
   display: flex;
@@ -13,6 +14,7 @@
   padding: 40px 16px;
 }
 
+/* 가장 바깥 카드(틀) */
 .cancel-card {
   width: 100%;
   max-width: 900px;
@@ -22,17 +24,19 @@
   box-shadow: none;
 }
 
+/* 제목 */
 .page-title {
   font-size: 24px;
   margin-bottom: 24px;
   font-weight: 700;
 }
 
-/* 가운데 카드 */
+/* 가운데 카드 래퍼 */
 .inner-card-wrapper {
   background: #f2f2f2;
 }
 
+/* 실제 메시지 박스 */
 .message-card {
   max-width: 720px;
   margin: 0 auto;

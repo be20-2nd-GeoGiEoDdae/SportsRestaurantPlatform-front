@@ -1,69 +1,66 @@
-/* ===== 캔버스/뷰포트 ===== */
-.viewport {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+/* ===== 관리자 RestaurantManage.vue 와 같은 레이아웃 ===== */
 
-}
-
-.canvas {
-  width: 1024px;
-  height: 768px;
-  transform-origin: top left;
-  box-sizing: border-box;
-}
-
-/* ===== 페이지 전체 ===== */
+/* 페이지 전체 래퍼 */
 .review-page {
-  height: 100%;
-  background: #ffffff;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #f5f5f5;
 }
 
-
-/* 메인 레이아웃 */
-.main-layout {
-  flex: 1;
+/* 사이드바 + 컨텐츠 래퍼 */
+.review-body {
   display: flex;
-}
-
-
-/* 오른쪽 리뷰 영역 */
-.review-main {
   flex: 1;
-  padding: 24px 32px;
-  background: #f6f6f6;
 }
 
+/* 왼쪽 사이드바 : 너비/스타일만 맞추고, SidebarUser 안쪽 css는 그대로 사용 */
+.review-sidebar {
+  width: 200px;
+  background-color: #ffffff;
+  border-right: 1px solid #e9ecef;
+}
+
+/* 오른쪽 컨텐츠 영역 */
+.review-content {
+  flex: 1;
+  padding: 30px 40px 40px;
+  background-color: #f6f6f6;
+}
+
+/* 페이지 타이틀 */
 .page-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
-  margin-bottom: 12px;
-}
-
-.title-divider {
-  height: 2px;
-  width: 100%;
-  background: #000000;
   margin-bottom: 20px;
 }
 
-/* 리뷰 카드 */
+/* 리스트 섹션 (관리자 페이지 table-section 느낌) */
+.list-section {
+  border: 1px solid #dee2e6;
+  background-color: #ffffff;
+  padding: 16px 20px 24px;
+  border-radius: 8px;
+  box-sizing: border-box;
+  margin-top: 8px;
+}
+/* 리뷰 카드 리스트 */
 .review-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
+/* 개별 카드 */
 .review-card {
   background: #ffffff;
   border-radius: 10px;
-  border: 2px solid #6D94C5;
+  border: 2px solid #6d94c5;
   box-shadow: 0 0 6px rgba(0, 169, 255, 0.3);
   padding: 16px 18px;
 }
 
+/* 카드 헤더 */
 .review-card-header {
   display: flex;
   justify-content: space-between;
@@ -81,6 +78,7 @@
   color: #606266;
 }
 
+/* 카드 바디 */
 .review-card-body {
   display: flex;
   align-items: stretch;
@@ -95,7 +93,7 @@
 }
 
 /* 가운데 내용 */
-.review-content {
+.review-content-inner {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -132,7 +130,7 @@
   line-height: 1.5;
 }
 
-/* 오른쪽 버튼 */
+/* 오른쪽 버튼 영역 */
 .review-actions {
   display: flex;
   flex-direction: column;
@@ -143,8 +141,8 @@
 
 .btn-edit {
   border-radius: 999px;
-  border-color: #6D94C5;
-  color: #6D94C5;
+  border-color: #6d94c5;
+  color: #6d94c5;
   background: #ffffff;
 }
 

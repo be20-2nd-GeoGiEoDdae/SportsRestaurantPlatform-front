@@ -13,6 +13,8 @@
 
         <h2 class="page-title">관람 내역</h2>
 
+        <section class="history-section">
+
         <!-- 검색창 -->
         <el-input
             v-model="keyword"
@@ -24,38 +26,49 @@
         <!-- 카드 리스트 (상태별 묶음 없음) -->
         <div
             class="history-card"
-            v-for="(item, idx) in paginated"
-            :key="'item-' + idx"
+            v-for="viewing in viewingList"
+            :key="'item-' + viewing.id"
         >
           <!-- 상태 라벨 -->
           <div
               class="status-label"
-              :class="{ done: item.status === 'done', wait: item.status === 'wait' }"
+              :class="{ done: viewing.status === 'true', wait: viewing.status === 'false' }"
           >
-            {{ item.status === 'done' ? '관람 완료' : '관람 예약 중' }}
-            <div class="date">관람일시 : {{ item.date }}</div>
+            {{ viewing.status ? '관람 완료' : '관람 예약 중' }}
+            <div class="date">관람일시 : {{ viewing.viewingAt }}</div>
           </div>
 
 
+          <!--          <div class="card-body">
+                      <div class="left-img">
+                        <img src="https://via.placeholder.com/90"/>
+                      </div>-->
           <div class="card-body">
-            <div class="left-img">
-              <img src="https://via.placeholder.com/90" />
+            <div class="left-img"><img
+                v-if="viewing.pictures && viewing.pictures.length"
+                :src="viewing.pictures[0]"
+                class="thumb-img"
+                alt="관람 썸네일"
+            />
+              <span v-else>사진 없음</span>
             </div>
 
             <div class="center-info">
-              <div class="title">{{ item.title }}</div>
-              <div class="info">카테고리 : {{ item.category }}</div>
-              <div class="info">위치 : {{ item.address }}</div>
+              <div class="title">{{ viewing.title }}</div>
+              <div class="info">가격 : {{ viewing.amount }}</div>
+              <div class="info">위치 : {{ viewing.location }}</div>
             </div>
 
             <div class="right-info">
 
-              <el-button type="primary" size="small" plain>
+              <el-button
+                  type="primary" size="small" plain
+                  @click="goViewingDetail(viewing)">
                 관람 상세 내역
               </el-button>
 
               <el-button
-                  v-if="item.status === 'done'"
+                  v-if="!viewing.status"
                   type="info"
                   size="small"
                   plain
@@ -65,21 +78,21 @@
               </el-button>
 
               <el-button
-                  v-if="item.status === 'wait'"
+                  v-if="!viewing.status"
                   type="danger"
                   size="small"
                   plain
-                  @click="openCancelOverlay"
+                  @click="openCancelOverlay(viewing)"
               >
                 예약 취소
               </el-button>
 
               <el-button
-                  v-if="item.status === 'done'"
+                  v-if="!viewing.status"
                   type="danger"
                   size="small"
                   plain
-                  @click="openReportOverlay(item)"
+                  @click="openReportOverlay(viewing)"
               >
                 가게 신고
               </el-button>
@@ -93,7 +106,7 @@
             <h3 class="cancel-title">결제를 취소 하시겠습니까?</h3>
 
             <p class="cancel-text">
-              관람일로부터 일주일 보다 이전에 결제 시 전액 환불 되며<br />
+              관람일로부터 일주일 보다 이전에 결제 시 전액 환불 되며<br/>
               관람일 하루 전부터 3일 이내에 환불 시 결제 금액의 50%만 환불 됩니다.
             </p>
 
@@ -157,60 +170,122 @@
 
         <div class="pagination-wrapper">
           <el-pagination
-              :total="100"
-              :page-size="10"
+              :total="totalElements"
+              :page-size="pageSize"
               :current-page="currentPage"
               layout="prev, pager, next"
               @current-change="handlePageChange"
           />
         </div>
-
+        </section>
       </section>
     </main>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import { Search } from "@element-plus/icons-vue";
+import {ref, computed, onMounted} from "vue";
+import {Search} from "@element-plus/icons-vue";
 import SidebarUser from "@/components/shared/sidebar/user/SidebarUser.vue";
 import router from "@/router/index.js";
+import {cancelViewing, createReport, viewingLogList} from "@/api/api.js";
 
-/* 전체 데이터 */
-const items = ref([
-  { status: "done", title: "삼성 롯데 경기 단체 관람", category: "오스테이", address: "서울시 동작구...", date: "25-11-13 / 13:30" },
-  { status: "wait", title: "기아 LG 경기 관람", category: "스테이", address: "서울 송파구...", date: "25-11-14 / 11:00" },
-  { status: "done", title: "롯데 SSG 경기", category: "오스테이", address: "서울 강남구...", date: "25-10-02 / 18:00" },
-  { status: "wait", title: "삼성 KT 경기", category: "경기관람", address: "서울 강동구...", date: "25-11-01 / 14:00" },
-  { status: "done", title: "두산 NC 경기", category: "관람권", address: "부산 해운대...", date: "25-09-20 / 10:00" },
-  { status: "wait", title: "한화 KIA 경기", category: "오스테이", address: "대전 중구...", date: "25-08-11 / 15:20" }
-]);
+const viewingList = ref([]);
+const loading = ref(false);
+const errorMessage = ref('');
+const selectedViewing = ref(null);
+const currentPage= ref(1);
+const pageSize =ref(10);
+const totalElements=ref(0);
+
+const getImageUrl = (path) => {
+  if (!path) {
+    return "/images/no-image.png";
+  }
+  if (path.startsWith("http")) {
+    return path;
+  }
+  return `http://localhost:8080${path}`;
+};
+
+const REPORT_TYPE_CODE_MAP = {
+  "신고 완료": 1,
+  "예약 불이행": 2,
+  "요금 문제": 3,
+  "서비스 불만": 4,
+  "기타": 5,
+};
+
+const loadingViewingLog = async () => {
+  loading.value = true;
+  errorMessage.value = '';
+  try {
+    const res = await viewingLogList(1,{
+      page: currentPage.value - 1, // ✅ Spring은 0부터, UI는 1부터라 -1
+          size: pageSize.value,
+    });
+    const pageData = res.data.data;
+
+    viewingList.value = pageData.content.map((log, idx) => {
+      const pictures = log.pictureUrls ? log.pictureUrls.split(",").map(
+          (u) => getImageUrl(u.trim())) : [];
+      return {
+        id: idx + 1,                                    // 또는 log.orderId 써도 됨
+        status: !!log.viewingUserIsAttend,
+        amount: `${log.viewingUserDeposit.toLocaleString()}원`, // 금액
+        title: log.viewingTitle,                         // 결제 내용
+        location: log.restaurantLocation,
+        viewingAt: log.viewingAt.substring(0, 10), // '2025-11-25' 형태로 잘라서 사용
+        viewingCode: log.viewingCode,
+        restaurantCode: log.restaurantCode,
+        pictures, // 🔹 카드에서 쓸 이미지 배열
+      };
+    });
+    totalElements.value = pageData.totalElements;
+    pageSize.value = pageData.size;
+  } catch (e) {
+    console.error(e);
+    errorMessage.value = e.message || '관람 내역 조회 중 오류가 발생했습니다.';
+  } finally {
+    loading.value = false;
+  }
+}
 
 const showCancelOverlay = ref(false);
 
-const openCancelOverlay = () => {
+const openCancelOverlay = (viewing) => {
+  selectedViewing.value = viewing;
   showCancelOverlay.value = true;
 };
 
 const closeCancelOverlay = () => {
+  selectedViewing.value = null;
   showCancelOverlay.value = false;
 };
 
-const confirmCancel = () => {
-  console.log("예약 취소 실행");
-  showCancelOverlay.value = false;
-};
+const confirmCancel = async () => {
+  if (!selectedViewing.value) {
+    return;
+  }
 
+  try {
+    // viewingCode로 취소 API 호출
+    await cancelViewing(selectedViewing.value.viewingCode, 1);
 
+    // 취소 후 목록 다시 로딩 (또는 로컬에서 상태만 변경해도 됨)
+    await loadingViewingLog();
 
-
-
-
+    showCancelOverlay.value = false;
+    selectedViewing.value = null;
+  } catch (e) {
+    console.error("예약 취소 실패", e);
+    // 필요하면 에러 메시지 노출
+    errorMessage.value = e.message || "예약 취소 중 오류가 발생했습니다.";
+  }
+}
 
 /* 검색 */
 const keyword = ref("");
-
-/* 페이지 */
 
 const showReportOverlay = ref(false);
 const reportTarget = ref(null);
@@ -218,6 +293,11 @@ const reportForm = ref({
   reason: "",
   detail: "",
 });
+
+const handlePageChange = (page) => {
+  currentPage.value = page;
+  loadingViewingLog();
+};
 
 const openReportOverlay = (ticket) => {
   reportTarget.value = ticket;
@@ -228,27 +308,60 @@ const openReportOverlay = (ticket) => {
 
 const closeReportOverlay = () => {
   showReportOverlay.value = false;
+  reportTarget.value = null;
 };
 
-const submitReport = () => {
-  console.log("가게 신고", {
-    target: reportTarget.value,
-    ...reportForm.value,
-  });
-  // TODO: 신고 API 호출
-  showReportOverlay.value = false;
+const submitReport = async () => {
+  if (!reportTarget.value) {
+    return;
+  }
+
+  // 사유 / 내용 간단 검증
+  if (!reportForm.value.reason) {
+    alert("신고 사유를 선택해주세요.");
+    return;
+  }
+  if (!reportForm.value.detail) {
+    alert("신고 내용을 입력해주세요.");
+    return;
+  }
+
+  // reason(라디오 값) → reportTypeCode(숫자) 변환
+  const reportTypeCode = REPORT_TYPE_CODE_MAP[reportForm.value.reason];
+  if (!reportTypeCode) {
+    alert("알 수 없는 신고 사유입니다.");
+    return;
+  }
+
+  const dto = {
+    reportContents: reportForm.value.detail,                     // 신고 내용
+    restaurantCode: Number(reportTarget.value.restaurantCode),   // 가게 코드
+    reportTypeCode: Number(reportTypeCode),                      // 신고 타입 코드
+  };
+
+  try {
+    await createReport(1, dto);   // ★ 신고 API 호출
+
+    alert("신고가 접수되었습니다.");
+    showReportOverlay.value = false;
+    reportTarget.value = null;
+  } catch (e) {
+    console.error("신고 접수 실패", e);
+    alert(e.message || "신고 접수 중 오류가 발생했습니다.");
+  }
 };
 
-/* 페이지당 3개 */
-const page = ref(1);
-const paginated = computed(() => {
-  const start = (page.value - 1) * 3;
-  return items.value.slice(start, start + 3);
-});
 
-const goReview = ()=>{
+
+const goReview = () => {
   router.replace('/MyPage/Review/Edit');
 }
+const goViewingDetail = (viewing) => {
+  router.push(`/restaurant/detailed/${viewing.viewingCode}`);
+};
+onMounted(() => {
+  loadingViewingLog();
+})
 </script>
 
 <style scoped>

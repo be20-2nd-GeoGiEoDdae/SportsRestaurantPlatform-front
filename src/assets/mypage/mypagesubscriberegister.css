@@ -16,12 +16,24 @@
 .main-inner {
   width: 100%;
   max-width: 960px;
+  display: flex;
+  justify-content: center;
+}
+.sub-card {
+  width: 100%;
+  max-width: 720px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px 32px 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
 }
 
 .page-title {
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 24px;
+  text-align: center;
 }
 
 /* 공통 섹션 */
@@ -63,8 +75,8 @@
 }
 
 .plan-card--active {
-  background: #00a9ff;
-  border-color: #00a9ff;
+  background: #6D94C5;
+  border-color: #6D94C5;
   color: #ffffff;
 }
 
@@ -101,7 +113,7 @@
   padding: 6px 14px;
   border-radius: 999px;
   background: #e5f5ff;
-  color: #00a9ff;
+  color: #6D94C5;
   font-weight: 600;
 }
 

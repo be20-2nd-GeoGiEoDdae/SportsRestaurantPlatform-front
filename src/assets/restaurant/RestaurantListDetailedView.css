@@ -1,6 +1,6 @@
 /* ================================================
-      DETAIL PAGE — 스타일 통일 버전
-   ================================================ */
+      DETAIL PAGE — 스타일 통일 버전 + 리뷰 개선
+================================================ */
 
 /* 페이지 전체 */
 .detail-wrapper {
@@ -16,7 +16,6 @@
     margin-bottom: 40px;
 }
 
-/* 메인 이미지 */
 .hero-main {
     width: 65%;
     height: 400px;
@@ -25,7 +24,6 @@
     cursor: pointer;
 }
 
-/* 썸네일 리스트 */
 .hero-thumbs {
     width: 35%;
     display: flex;
@@ -33,7 +31,6 @@
     gap: 12px;
 }
 
-/* 일반 썸네일 */
 .thumb {
     width: 100%;
     height: calc((400px - 12px) / 2);
@@ -42,7 +39,6 @@
     cursor: pointer;
 }
 
-/* 마지막 썸네일(더보기) */
 .more-thumb {
     position: relative;
     width: 100%;
@@ -91,21 +87,18 @@
     flex: 1;
 }
 
-/* 가게명 */
 .store-name {
-    font-size: 30px;
+    font-size: 32px;
     font-weight: 800;
     margin-bottom: 12px;
 }
 
-/* 설명 */
 .store-desc {
     line-height: 1.6;
     margin-bottom: 25px;
     color: #444;
 }
 
-/* 정보 블록 */
 .info-block {
     margin-bottom: 25px;
 }
@@ -116,7 +109,6 @@
     margin-bottom: 8px;
 }
 
-/* 태그 리스트 */
 .tag-list {
     display: flex;
     flex-wrap: wrap;
@@ -127,15 +119,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: #6D94C5;        /* 파란색 */
+    background: #6D94C5;
     color: white;
     padding: 10px 18px;
-    border-radius: 25px;        /* 완전 둥글게 */
+    border-radius: 25px;
     font-size: 14px;
     font-weight: 700;
-    cursor: default;
     white-space: nowrap;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.12); /* 살짝 떠 보이게 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.12);
 }
 
 /* ============= 예약 박스 ============= */
@@ -196,44 +187,106 @@
     border-radius: 10px;
 }
 
-/* ================= 리뷰 ================= */
+/* ================= 리뷰 영역 ================= */
+
 .review-section {
-    margin-bottom: 50px;
+    margin-bottom: 60px;
 }
 
-.review-gallery {
+/* 리뷰 헤더 */
+.review-header {
     display: flex;
-    gap: 16px;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.review-title {
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.review-score {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffb800;
+}
+
+.sort-btn {
+    margin-left: auto;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: #f2f2f2;
+}
+
+/* 여기어때 스타일 리뷰 아이템 */
+.review-item {
+    padding: 25px 0;
+}
+
+.review-user {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.review-text {
+    font-size: 15px;
+    color: #444;
+    line-height: 1.5;
+    margin-top: 10px;
+}
+
+/* 리뷰 사진 */
+.review-gallery {
+    margin-top: 8px;
+    margin-bottom: 10px;
 }
 
 .review-img {
-    width: 180px;
-    height: 140px;
+    width: 200px;
+    height: 150px;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.review-img:hover {
+    transform: translateY(-2px);
+}
+
+/* 구분선 */
+.review-item hr {
+    margin-top: 25px;
+    border: none;
+    border-bottom: 1px solid #e5e5e5;
 }
 
 /* 페이지네이션 */
 .pagination-area {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     padding-bottom: 40px;
 }
 
 .page {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
     border: 1px solid #ddd;
     background: #fff;
+    font-weight: 600;
     cursor: pointer;
 }
 
 .page.active {
     background: #6D94C5;
     color: #fff;
+    border-color: #6D94C5;
 }
 
 /* 하단 버튼 */
@@ -252,12 +305,10 @@
 }
 
 
-
 /* ====================
        반응형
 ==================== */
 
-/* 1700px 이하 */
 @media (max-width: 1700px) {
     .hero-section {
         flex-direction: column;
@@ -283,19 +334,17 @@
     }
 }
 
-/* 1024px 이하 */
 @media (max-width: 1024px) {
     .thumb,
     .more-thumb {
         height: 120px;
     }
     .review-img {
-        width: 140px;
+        width: 150px;
         height: 110px;
     }
 }
 
-/* 768px 이하 */
 @media (max-width: 768px) {
     .hero-main {
         height: 240px;
@@ -306,9 +355,6 @@
     .thumb,
     .more-thumb {
         height: 140px;
-    }
-    .review-gallery {
-        gap: 8px;
     }
     .review-img {
         width: 120px;

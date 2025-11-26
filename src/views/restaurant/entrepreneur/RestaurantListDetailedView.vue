@@ -61,7 +61,6 @@
           <Label class="info-title">위치</Label>
           <p>{{ restaurant.restaurantLocation }}</p>
         </div>
-
       </div>
 
       <!-- 오른쪽 예약 박스 -->
@@ -89,49 +88,47 @@
 
       <div class="review-header">
         <p class="review-title">⭐ 가게 리뷰</p>
-        <p class="review-score">4.5</p>
-        <p class="sort-btn">최신순</p>
+        <p class="review-score">{{ avgScore }}</p>
+        <p class="sort-btn" @click="sortByScore">평점순</p>
       </div>
 
-      <!-- 봄 리뷰 -->
-      <div class="season">봄</div>
-      <div class="review-gallery">
-        <img
-            v-for="(img, n) in sampleReview"
-            :key="'spring' + n"
-            :src="img"
-            class="review-img"
-            @click="openLightboxReview(n)"
-        />
-      </div>
-      <p class="review-text">너무 재밌게 즐겼습니다~~!</p>
+      <!-- 리뷰 아이템 -->
+      <div
+          v-for="review in pagedReviews"
+          :key="review.reviewCode"
+          class="review-item"
+      >
+        <div class="review-gallery" v-if="review.pictures">
+          <img
+              :src="getImageUrl(review.pictures)"
+              class="review-img"
+              @click="openLightboxReview(review)"
+          />
+        </div>
 
-      <hr />
+        <p class="review-user">{{ review.userName }} 님</p>
+        <p class="review-text">{{ review.reviewBody }}</p>
 
-      <!-- 여름 리뷰 -->
-      <div class="season">여름</div>
-      <div class="review-gallery">
-        <img
-            v-for="(img, n) in sampleReview"
-            :key="'summer' + n"
-            :src="img"
-            class="review-img"
-            @click="openLightboxReview(n)"
-        />
+        <hr />
       </div>
-      <p class="review-text">너무 재밌게 즐겼습니다~~!</p>
 
     </section>
 
     <!-- 페이지네이션 -->
     <div class="pagination-area">
-      <Button class="page-btn">&lt;</Button>
-      <Button class="page active">1</Button>
-      <Button class="page">2</Button>
-      <Button class="page">3</Button>
-      <Button class="page">4</Button>
-      <Button class="page">5</Button>
-      <Button class="page-btn">&gt;</Button>
+      <Button class="page-btn" @click="prevPage" :disabled="page===1">&lt;</Button>
+
+      <Button
+          class="page"
+          v-for="n in totalPages"
+          :key="n"
+          :class="{ active: page === n }"
+          @click="goPage(n)"
+      >
+        {{ n }}
+      </Button>
+
+      <Button class="page-btn" @click="nextPage" :disabled="page===totalPages">&gt;</Button>
     </div>
 
     <!-- 하단 버튼 -->
@@ -142,7 +139,7 @@
 
     <!-- Lightbox -->
     <ImageLightbox
-        :images="allImages"
+        :images="lightboxImages"
         :visible="lightboxVisible"
         :index="lightboxIndex"
         @close="lightboxVisible = false"
@@ -163,94 +160,128 @@ import Text from "@/components/shared/basic/Text.vue";
 import Label from "@/components/shared/basic/Label.vue";
 import ImageLightbox from "@/components/shared/imagebox/ImageLightbox.vue";
 
-import "@/assets/restaurant/RestaurantListDetailedView.css"
+import "@/assets/restaurant/RestaurantListDetailedView.css";
+
 
 /* -----------------------------
-    Restaurant 데이터 구조
+    상태값
 ----------------------------- */
-const restaurant = ref({
-  restaurantName: "",
-  restaurantContents: "",
-  restaurantCategory: "",
-  restaurantLocation: ""
-});
-
-/* 2) 키워드 */
+const restaurant = ref({});
 const tags = ref([]);
-
-/* 3) 이미지 */
 const images = ref([]);
-const sampleReview = ref([
-  "/src/assets/img/rev1.jpg",
-  "/src/assets/img/rev2.jpg",
-  "/src/assets/img/rev3.jpg"
-]);
+const reviews = ref([]);
 
-/* Lightbox */
+const route = useRoute();
+
+
+/* -----------------------------
+    백엔드 이미지 URL
+----------------------------- */
+const getImageUrl = (path) =>
+    path ? `http://localhost:8080${path}` : "/images/default.jpg";
+
+
+/* -----------------------------
+    라이트박스
+----------------------------- */
 const lightboxVisible = ref(false);
 const lightboxIndex = ref(0);
-
-const getImageUrl = (path) => {
-  return path ? `http://localhost:8080${path}` : "/images/default.jpg";
-};
+const lightboxImages = ref([]);
 
 const openLightbox = (i) => {
+  lightboxImages.value = images.value;
   lightboxIndex.value = i;
   lightboxVisible.value = true;
 };
 
-const openLightboxReview = (i) => {
-  lightboxIndex.value = images.value.length + i;
+const openLightboxReview = (review) => {
+  lightboxImages.value = [getImageUrl(review.pictures)];
+  lightboxIndex.value = 0;
   lightboxVisible.value = true;
 };
 
-const allImages = computed(() => [...images.value, ...sampleReview.value]);
 
-/* 예약 */
+/* -----------------------------
+    예약 박스
+----------------------------- */
 const count = ref(1);
 const pricePerPerson = 30000;
+
 const totalPrice = computed(() => count.value * pricePerPerson);
 const plus = () => count.value++;
 const minus = () => count.value > 1 && count.value--;
 
-/* -----------------------------
-    백엔드 Restaurant 상세 조회
------------------------------ */
-const route = useRoute();
 
+/* -----------------------------
+    리뷰 페이징
+----------------------------- */
+const page = ref(1);
+const size = 2;
+
+const totalPages = computed(() =>
+    Math.ceil(reviews.value.length / size)
+);
+
+const pagedReviews = computed(() =>
+    reviews.value.slice((page.value - 1) * size, page.value * size)
+);
+
+const nextPage = () => page.value < totalPages.value && page.value++;
+const prevPage = () => page.value > 1 && page.value--;
+const goPage = (n) => page.value = n;
+
+
+/* -----------------------------
+    리뷰 정렬
+----------------------------- */
+const sortByScore = () => {
+  reviews.value.sort((a, b) => b.reviewScore - a.reviewScore);
+  page.value = 1;
+};
+
+
+/* -----------------------------
+    평균 평점
+----------------------------- */
+const avgScore = computed(() => {
+  if (reviews.value.length === 0) return "-";
+  const sum = reviews.value.reduce((acc, r) => acc + r.reviewScore, 0);
+  return (sum / reviews.value.length).toFixed(1);
+});
+
+
+/* -----------------------------
+    상세 조회 + 리뷰 조회
+----------------------------- */
 onMounted(async () => {
   const id = route.params.id;
 
   try {
-    const { data } = await axios.get(
-        `http://localhost:8080/api/restaurants/${id}`
-    );
+    /* ⭐ Restaurant 상세 */
+    const { data } = await axios.get(`http://localhost:8080/api/restaurants/${id}`);
+    restaurant.value = data;
 
-    /* Restaurant 매핑 */
-    restaurant.value = {
-      restaurantName: data.restaurantName,
-      restaurantContents: data.restaurantContents,
-      restaurantCategory: data.restaurantCategory,
-      restaurantLocation: data.restaurantLocation
-    };
-
-    /* # 키워드 처리 (문자열 → 배열) */
-    if (typeof data.keywords === "string") {
+    /* 키워드 */
+    if (data.keywords) {
       tags.value = data.keywords
-          .split(",")        // 오직 쉼표만 split
+          .split(",")
           .map(v => v.trim())
           .filter(v => v.length > 0);
     }
-    console.log("RAW keywords:", data.keywords);
-    console.log("PARSED tags:", tags.value);
-    /* 이미지 처리 */
-    if (typeof data.pictureUrls === "string") {
+
+    /* 사진 */
+    if (data.pictureUrls) {
       images.value = data.pictureUrls
           .split(",")
-          .map(path => getImageUrl(path.trim()));
+          .map(p => getImageUrl(p.trim()));
     }
+
+    /* ⭐ 리뷰 조회 */
+    const res = await axios.get(`http://localhost:8080/api/reviews/restaurant/${id}`);
+    reviews.value = res.data;
+
   } catch (err) {
-    console.error("가게 상세 조회 실패:", err);
+    console.error("상세 조회 실패", err);
   }
 });
 </script>

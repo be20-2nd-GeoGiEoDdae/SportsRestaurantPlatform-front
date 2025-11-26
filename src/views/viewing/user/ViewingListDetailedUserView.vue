@@ -44,25 +44,21 @@
         <Text tag="h1" class="store-name">{{ storeName }}</Text>
         <Text tag="p" class="store-desc">{{ viewDescription }}</Text>
 
-        <!-- 관람명 -->
         <div class="info-block">
           <Label class="info-title">관람명</Label>
           <p class="info-value">{{ viewName }}</p>
         </div>
 
-        <!-- 종목 -->
         <div class="info-block">
           <Label class="info-title">종목</Label>
           <p class="info-value">{{ sportCategory }}</p>
         </div>
 
-        <!-- 팀 -->
         <div class="info-block">
           <Label class="info-title">팀</Label>
           <p class="info-value">{{ teamName }}</p>
         </div>
 
-        <!-- 인원 -->
         <div class="info-block">
           <Label class="info-title">인원 현황</Label>
           <p class="info-value">
@@ -72,7 +68,6 @@
           </p>
         </div>
 
-        <!-- 키워드 -->
         <div class="info-block">
           <Label class="info-title">키워드</Label>
           <div class="tag-list">
@@ -80,7 +75,6 @@
           </div>
         </div>
 
-        <!-- 위치 -->
         <div class="info-block">
           <Label class="info-title">위치</Label>
           <p>{{ restaurantLocation }}</p>
@@ -109,7 +103,6 @@
 
     </section>
 
-    <!-- ================= Lightbox ================= -->
     <ImageLightbox
         :images="allImages"
         :visible="lightboxVisible"
@@ -125,6 +118,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
+import { useRoute } from "vue-router";
 import axios from "axios";
 
 import Button from "@/components/shared/basic/Button.vue";
@@ -135,7 +129,10 @@ import ImageLightbox from "@/components/shared/imagebox/ImageLightbox.vue";
 
 import "@/assets/viewing/ViewingListDetailedView.css";
 
-/* ====== 문자열 데이터 ====== */
+const route = useRoute();
+const viewingId = computed(() => route.params.id);
+
+/* ====== 기본 데이터 ====== */
 const storeName = ref("");
 const viewName = ref("");
 const viewDescription = ref("");
@@ -143,11 +140,11 @@ const sportCategory = ref("");
 const teamName = ref("");
 
 /* ====== 인원 ====== */
-const currentPeople = ref(0);   // viewingMaxNum
-const applyMin = ref(0);        // viewingMinNum
-const restaurantMax = ref(0);   // restaurantMaxNum
+const currentPeople = ref(0);
+const applyMin = ref(0);
+const restaurantMax = ref(0);
 
-/* ====== 기타 ====== */
+/* ====== 키워드 및 위치 ====== */
 const keywords = ref([]);
 const restaurantLocation = ref("");
 
@@ -176,7 +173,6 @@ const getImageUrl = (path) => {
 
 const allImages = computed(() => [...images.value, ...sampleReview.value]);
 
-
 /* ====== 예약 기능 ====== */
 const count = ref(1);
 const pricePerPerson = 30000;
@@ -186,32 +182,24 @@ const totalPrice = computed(() => count.value * pricePerPerson);
 const plus = () => count.value++;
 const minus = () => count.value > 1 && count.value--;
 
-
-/* ====== 서버 요청 ====== */
+/* ====== 서버 조회 ====== */
 onMounted(async () => {
-  const viewingId = 3;
+  const { data: d } = await axios.get(`http://localhost:8080/api/viewings/${viewingId.value}`);
 
-  const { data: d } = await axios.get(`http://localhost:8080/api/viewings/${viewingId}`);
-
-  /* 기본 정보 */
   storeName.value = d.restaurantName;
   viewName.value = d.viewingTitle;
   viewDescription.value = d.viewingBody;
   sportCategory.value = d.sportName;
   teamName.value = d.teamName;
 
-  /* 인원 */
   currentPeople.value = d.viewingMaxNum || 0;
   applyMin.value = d.viewingMinNum || 0;
   restaurantMax.value = d.restaurantMaxNum || 0;
 
-  /* 키워드 */
   keywords.value = d.keywords ? d.keywords.split(",") : [];
 
-  /* 위치 */
   restaurantLocation.value = d.restaurantLocation || "정보 없음";
 
-  /* 이미지 */
   images.value = d.pictureUrls
       ? d.pictureUrls.split(",").map(path => getImageUrl(path))
       : [];

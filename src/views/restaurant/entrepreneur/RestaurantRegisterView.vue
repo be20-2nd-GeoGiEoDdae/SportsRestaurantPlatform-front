@@ -284,7 +284,7 @@ const form = reactive({
   restaurantLocation: "",
   latitude: null,
   longitude: null,
-  entrepreneurCode: 2,
+  entrepreneurCode: 1,
   keywordIds: [],
 });
 

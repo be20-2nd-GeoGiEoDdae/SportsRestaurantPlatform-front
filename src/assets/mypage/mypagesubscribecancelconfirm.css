@@ -1,19 +1,6 @@
-/* 고정 캔버스 */
-.viewport {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.canvas {
-  width: 1024px;
-  height: 768px;
-  transform-origin: top left;
-}
-
-/* 페이지 배경/레이아웃 */
+/* 전체 배경/레이아웃 (viewport/canvas 없이 전체 뷰에 맞게) */
 .cancel-page {
-  min-height: 100%;
+  min-height: 100vh;
   background: #f2f2f2;
   display: flex;
   flex-direction: column;
@@ -33,6 +20,7 @@
   margin: 0 auto;
 }
 
+/* 페이지 타이틀 */
 .page-title {
   font-size: 24px;
   margin-bottom: 24px;

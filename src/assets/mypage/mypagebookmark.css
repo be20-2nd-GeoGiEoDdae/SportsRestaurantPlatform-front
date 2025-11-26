@@ -1,123 +1,80 @@
-/* ===== 캔버스/뷰포트 ===== */
-.viewport {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.canvas {
-  width: 1024px;
-  height: 768px;
-  transform-origin: top left;
-}
-
-/* ===== 페이지 레이아웃 ===== */
-.favorite-page {
-  height: 100%;
-  background: #ffffff;
+/* 페이지 전체 래퍼 (관리자 admin-page와 동일한 구조) */
+.bookmark-page {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #f5f5f5;
 }
 
-/* 상단 바 */
-.top-bar {
-  border-bottom: 1px solid #e4e7ed;
-  background: #ffffff;
+/* 사이드바 + 컨텐츠 래퍼 */
+.bookmark-body {
+  display: flex;
+  flex: 1;
 }
 
-.top-bar-inner {
-  height: 70px;
-  padding: 0 32px;
+/* 왼쪽 사이드바 – SidebarUser는 그대로, 폭/배경만 관리자랑 맞춤 */
+.bookmark-sidebar {
+  width: 200px;
+  background-color: #ffffff;
+  border-right: 1px solid #e9ecef;
+}
+
+/* 오른쪽 컨텐츠 */
+.bookmark-content {
+  flex: 1;
+  padding: 30px 40px 40px;
+  background-color: #f5f5f5;
+}
+
+/* 페이지 타이틀 */
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* 툴바 영역 (관리자 filter-section 느낌) */
+.toolbar-section {
+  background-color: #ffffff;
+  padding: 12px 16px;
+  border-radius: 8px 8px 0 0;
+  border: 1px solid #dee2e6;
+  border-bottom: none;
+}
+
+.toolbar-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.logo-text {
-  font-size: 18px;
-  font-weight: 700;
-  color: #00a9ff;
-}
-
-.nav-menu {
-  display: flex;
-  gap: 32px;
-  font-size: 15px;
-}
-
-.nav-item {
-  cursor: pointer;
-  color: #303133;
-}
-
-.nav-item.active {
-  font-weight: 600;
-}
-
-.user-area {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  color: #606266;
-}
-
-.icon-btn {
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 20px;
-}
-
-.logout-btn {
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: #606266;
-}
-
-.divider {
-  margin: 0 4px;
-}
-
-/* 메인 레이아웃 */
-.main-layout {
-  flex: 1;
-  display: flex;
-}
-/* 오른쪽 컨텐츠 */
-.favorite-main {
-  flex: 1;
-  padding: 24px 32px;
-  background: #f6f6f6;
-}
-
-.page-title {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 12px;
-}
-
-.title-divider {
-  height: 2px;
-  width: 100%;
-  background: #000;
-  margin-bottom: 16px;
-}
-
-/* 전체 선택 */
+/* 전체 선택 줄 */
 .select-all-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 12px;
 }
 
+.select-label {
+  font-size: 13px;
+  color: #555;
+}
+
+/* 전체 삭제 버튼 */
 .btn-delete-all {
   border-color: #ff4d4f;
   background: #ffebeb;
   color: #ff4d4f;
   border-radius: 16px;
+  padding: 4px 12px;
+}
+
+/* 리스트 + 카드 영역 (관리자 table-section 느낌) */
+.list-section {
+  border: 1px solid #dee2e6;
+  border-top: none;
+  background-color: #ffffff;
+  padding: 16px 16px 24px;
 }
 
 /* 즐겨찾기 카드 리스트 */
@@ -141,7 +98,7 @@
 .favorite-card {
   flex: 1;
   border-radius: 10px;
-  border: 2px solid #6D94C5;
+  border: 2px solid #6d94c5;
   background: #ffffff;
   padding: 14px 16px;
   display: flex;
@@ -161,6 +118,12 @@
   justify-content: center;
   font-size: 12px;
   color: #909399;
+}
+
+.store-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* 가운데 정보 */
@@ -219,8 +182,8 @@
 
 .btn-go {
   border-radius: 16px;
-  border-color:#6D94C5;
-  color: #6D94C5;
+  border-color: #6d94c5;
+  color: #6d94c5;
   background: #ffffff;
 }
 

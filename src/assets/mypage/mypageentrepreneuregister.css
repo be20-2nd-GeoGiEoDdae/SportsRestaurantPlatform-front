@@ -1,118 +1,63 @@
-.viewport {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.canvas {
-  width: 1024px;
-  height: 768px;
-  transform-origin: top left;
-}
-
-/* ===== 페이지 레이아웃 ===== */
+/* 페이지 전체 래퍼 (admin-page 비슷하게) */
 .biz-page {
-  height: 100%;
-  background: #ffffff;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #f5f5f5;
 }
 
-/* 상단 바 */
-.top-bar {
-  border-bottom: 1px solid #e4e7ed;
-  background: #ffffff;
-}
-
-.top-bar-inner {
-  height: 70px;
-  padding: 0 32px;
+/* 사이드바 + 컨텐츠 */
+.biz-body {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex: 1;
 }
 
-.logo-text {
-  font-size: 18px;
+/* 왼쪽 사이드바 – RestaurantManage의 .admin-sidebar와 동일 비율 */
+.biz-sidebar {
+  width: 200px;
+  background-color: #ffffff;
+  border-right: 1px solid #e9ecef;
+  flex-shrink: 0;
+}
+
+/* 오른쪽 컨텐츠 – .admin-content 같은 패딩 */
+.biz-content {
+  flex: 1;
+  padding: 30px 40px 40px;
+}
+
+/* 페이지 타이틀 */
+.page-title {
+  font-size: 22px;
   font-weight: 700;
-  color: #00a9ff;
+  margin-bottom: 20px;
 }
 
-.nav-menu {
+/* 폼 섹션 – 가운데 카드 위치 */
+.form-section {
   display: flex;
-  gap: 32px;
-  font-size: 15px;
+  justify-content: center;
 }
 
-.nav-item {
-  cursor: pointer;
-  color: #303133;
-}
-
-.nav-item.active {
-  font-weight: 600;
-}
-
-.user-area {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  color: #606266;
-}
-
-.icon-btn {
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 20px;
-}
-
-.logout-btn {
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: #606266;
-}
-
-.divider {
-  margin: 0 4px;
-}
-
-/* 메인 레이아웃 */
-.main-layout {
-  flex: 1;
-  display: flex;
-}
-
-/* 사이드 메뉴 */
-
-/* 폼 영역 */
-.form-main {
-  flex: 1;
-  display: flex;
-  justify-content: center;    /* 가로 가운데 */
-  align-items: center;        /* 세로 가운데 */
-  padding: 40px;              /* 바깥 여백 (상하좌우) */
-  background: #f6f6f6;
-}
-
+/* 카드 박스 – RestaurantManage 테이블 박스 느낌 */
 .form-container {
   width: 100%;
-  max-width: 720px;           /* 박스 최대 가로 폭 */
-  background: #ffffff;        /* 흰 박스 */
-  border-radius: 12px;        /* 모서리 둥글게 */
-  padding: 32px 40px;         /* 카드 안 여백 */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* 살짝 그림자 */
+  max-width: 720px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 32px 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   box-sizing: border-box;
 }
 
+/* ✅ 타이틀 스타일 */
 .form-title {
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 32px;
-  text-align: center;
+  text-align: center;   /* 가로 가운데 정렬 */
 }
+
 
 .form-row {
   margin-bottom: 18px;
@@ -256,12 +201,12 @@
   width: 100%;
   height: 44px;
   font-size: 16px;
-
-  background-color: #6D94C5 ;
-  border-color: #6D94C5;       /* 버튼 테두리색 */
-  color: #ffffff;              /* 버튼 텍스트색 */
+  background-color: #6D94C5;
+  border-color: #6D94C5;
+  color: #ffffff;
   font-weight: 600;
 }
+
 .submit-btn:hover {
   background-color: #6F99C7;
 }
