@@ -9,7 +9,6 @@ defineProps({
   type: {
     type: String,
     default: 'text',
-    // ⭐ 수정됨: textarea 타입 추가
     validator: (value) =>
         ['text', 'password', 'email', 'number', 'tel', 'url', 'textarea'].includes(value)
   },
@@ -40,7 +39,6 @@ defineProps({
     default: false
   },
   rows: {
-    // ⭐ textarea 전용 rows 추가
     type: Number,
     default: 4
   }
@@ -48,16 +46,23 @@ defineProps({
 
 defineEmits(['update:modelValue', 'focus', 'blur', 'change'])
 
-const inputEl = ref(null)
-defineExpose({ input: inputEl })
+/* ===========================
+   핵심: 실제 DOM 요소를 Ref로 확보
+=========================== */
+const native = ref(null)
+
+/* ===========================
+   외부에서 native DOM 접근 가능하게 expose
+=========================== */
+defineExpose({ native })
 </script>
 
 <template>
 
-  <!-- ⭐ 추가됨: textarea 전용 -->
+  <!-- textarea -->
   <textarea
       v-if="type === 'textarea'"
-      ref="inputEl"
+      ref="native"
       :placeholder="placeholder"
       :disabled="disabled"
       :readonly="readonly"
@@ -74,10 +79,10 @@ defineExpose({ input: inputEl })
       @change="$emit('change', $event)"
   ></textarea>
 
-  <!-- 기존 input -->
+  <!-- 기본 input -->
   <input
       v-else
-      ref="inputEl"
+      ref="native"
       :type="type"
       :value="modelValue"
       :placeholder="placeholder"
@@ -100,9 +105,8 @@ defineExpose({ input: inputEl })
 @import "@/assets/shared/colors.css";
 @import "@/assets/shared/basic/inputs.css";
 
-/* ⭐ textarea 스타일 추가 */
 .textarea-input {
-  resize: vertical;   /* 크기 조절 허용 */
+  resize: vertical;
   min-height: 100px;
 }
 </style>

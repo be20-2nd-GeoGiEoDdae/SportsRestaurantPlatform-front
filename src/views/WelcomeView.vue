@@ -1,10 +1,9 @@
 <template>
   <div class="home-page">
-
-    <!-- ★ Navbar 포함 -->
+    <!-- ★ Navbar -->
     <Navbar />
 
-    <!-- 히어로 영역 -->
+    <!-- ===================== 히어로 ===================== -->
     <section class="hero-section">
       <div class="hero-inner">
         <div class="hero-text">
@@ -18,7 +17,7 @@
             종목 선택만 하면 해당 경기를 보여주는 가게들을 한 번에 볼 수 있습니다.
           </p>
 
-          <!-- ★ 로그인 상태 기반 메인 CTA -->
+          <!-- ★ 로그인 상태 -->
           <div class="action-buttons">
             <template v-if="!isLoggedIn">
               <Button
@@ -40,8 +39,6 @@
               >
                 서비스 이용하기
               </Button>
-
-
             </template>
           </div>
         </div>
@@ -61,9 +58,8 @@
       </div>
     </section>
 
-    <!-- 메인 -->
+    <!-- ===================== 메인 ===================== -->
     <main class="main">
-
       <!-- 카테고리 -->
       <section class="category-section">
         <h2 class="category-title">
@@ -83,10 +79,10 @@
         </div>
       </section>
 
-      <!-- 레스토랑 카드 -->
+      <!-- ===================== 카드 리스트 ===================== -->
       <section class="cards-section">
         <div
-            v-for="restaurant in filteredRestaurants"
+            v-for="restaurant in filteredViewings"
             :key="restaurant.id"
             class="restaurant-card"
         >
@@ -114,27 +110,29 @@
           </div>
 
           <div class="restaurant-card-body">
-
-            <div class="thumb">사진</div>
+            <div class="thumb">
+              <img
+                  v-if="restaurant.pictureUrl"
+                  :src="restaurant.pictureUrl"
+                  class="thumb-img"
+              />
+              <span v-else>사진 없음</span>
+            </div>
 
             <div class="card-main">
               <div class="info-row">
                 <div class="info-left">
                   <div class="info-name-row">
-                    <div class="sport-icon">
-                      {{ sportEmojiMap[restaurant.sport] }}
-                    </div>
+
+                    <div class="sport-icon">{{ sportEmojiMap[restaurant.sport] }}</div>
                     <h3 class="restaurant-name">{{ restaurant.name }}</h3>
                   </div>
-
                   <p class="restaurant-sub">
                     {{ restaurant.sportLabel }} · {{ restaurant.highlight }}
                   </p>
                 </div>
 
-                <div class="rating-pill">
-                  ★ {{ restaurant.rating.toFixed(1) }}
-                </div>
+                <div class="rating-pill">★ {{ restaurant.rating.toFixed(1) }}</div>
               </div>
             </div>
 
@@ -164,7 +162,7 @@
           </div>
         </div>
 
-        <div v-if="filteredRestaurants.length === 0" class="empty-state">
+        <div v-if="filteredViewings.length === 0" class="empty-state">
           <div class="empty-emoji">🧐</div>
           <h3 class="empty-title">일치하는 가게가 없습니다.</h3>
           <p class="empty-sub">다른 종목을 선택해보세요.</p>
@@ -172,25 +170,18 @@
       </section>
     </main>
 
-    <!-- 모달 -->
+    <!-- ===================== 모달 ===================== -->
     <Transition name="slide-up">
-      <div
-          v-if="isModalOpen"
-          class="modal-overlay"
-          @click="closeModal"
-      >
+      <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
         <div class="modal" @click.stop>
           <div class="modal-header">
-            <div>
-              <h3 class="modal-title">
-                {{ modalStep === 1 ? '🏟️ 가게 예약하기' : '✅ 예약 완료' }}
-              </h3>
-            </div>
+            <h3 class="modal-title">
+              {{ modalStep === 1 ? "🏟️ 가게 예약하기" : "✅ 예약 완료" }}
+            </h3>
             <button @click="closeModal" class="modal-close">✕</button>
           </div>
 
           <div class="modal-body">
-
             <div v-if="modalStep === 1">
               <div class="modal-shop">
                 <div class="modal-shop-distance">
@@ -205,12 +196,8 @@
                     {{ selectedRestaurant?.sportLabel }} ·
                     {{ selectedRestaurant?.highlight }}
                   </div>
-                  <div class="modal-shop-name">
-                    {{ selectedRestaurant?.name }}
-                  </div>
-                  <div class="modal-shop-area">
-                    {{ selectedRestaurant?.area }}
-                  </div>
+                  <div class="modal-shop-name">{{ selectedRestaurant?.name }}</div>
+                  <div class="modal-shop-area">{{ selectedRestaurant?.area }}</div>
                 </div>
               </div>
 
@@ -233,67 +220,150 @@
                 닫기
               </button>
             </div>
-
           </div>
         </div>
       </div>
     </Transition>
-
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import axios from "axios";
 import Navbar from "@/components/shared/navbar/Navbar.vue";
 import Button from "@/components/shared/basic/Button.vue";
 
-// ==============================
-// 로그인 관련 상태
-// ==============================
 const router = useRouter();
 const route = useRoute();
 
+/* ===================== 로그인 ===================== */
 const isLoggedIn = ref(false);
 
-// URL에서 Token 읽어서 저장
 const saveTokenIfExists = () => {
   const access = route.query.accessToken;
   const refresh = route.query.refreshToken;
 
   if (access) {
     localStorage.setItem("accessToken", access);
-    if (refresh) {
-      localStorage.setItem("refreshToken", refresh);
-    }
-    router.replace({ path: route.path }); // URL 정리
+    if (refresh) localStorage.setItem("refreshToken", refresh);
+
+    router.replace({ path: route.path });
     isLoggedIn.value = true;
   }
 };
 
-// 로컬스토리지에서 로그인 확인
 const checkLoginStatus = () => {
   isLoggedIn.value = !!localStorage.getItem("accessToken");
 };
 
-// 로그인 시작
 const startSocialLogin = () => {
-  window.location.href =
-      "http://localhost:8080/oauth2/authorization/kakao";
+  window.location.href = "http://localhost:8080/oauth2/authorization/kakao";
 };
 
-
-
-// 서비스 이용하기
 const goToService = () => {
   router.push("/restaurant");
 };
 
-// ==============================
-// 더미 데이터 및 메인 페이지 로직
-// ==============================
+/* ===================== 이미지 경로 변환 (완전 디버그) ===================== */
+const getImageUrl = (path) => {
+  if (!path) return "/images/no-image.png";
 
-// 카테고리
+  console.log("🎯 RAW:", path);
+
+  // 이미 http로 시작하는 경우
+  if (path.startsWith("http")) return path;
+
+  // 서버에서 '/images/xxx.jpg' 로 보내는 경우
+  if (path.startsWith("/images")) {
+    const url = `http://localhost:8080${path}`;
+    console.log("➡️ returned (/images):", url);
+    return url;
+  }
+
+  // uploads/images 형태도 처리 가능 (혹시 다른 API에도 대비)
+  if (path.startsWith("/uploads/images")) {
+    const url = `http://localhost:8080${path}`;
+    console.log("➡️ returned (/uploads/images):", url);
+    return url;
+  }
+
+  if (path.startsWith("uploads/images")) {
+    const url = `http://localhost:8080/${path}`;
+    console.log("➡️ returned (uploads/images):", url);
+    return url;
+  }
+
+  // 예상치 못한 경우: 파일명만 왔을 때
+  const fallback = `http://localhost:8080${path}`;
+  console.log("➡️ fallback:", fallback);
+  return fallback;
+};
+
+/* ===================== Viewing 불러오기 ===================== */
+const viewingList = ref([]);
+const isLoading = ref(false);
+
+const sportMap = {
+  축구: "SOCCER",
+  야구: "BASEBALL",
+  농구: "BASKETBALL",
+};
+
+const loadViewings = async () => {
+  try {
+    isLoading.value = true;
+
+    console.log("📡 Viewing API 호출 시작");
+
+    const res = await axios.get("http://localhost:8080/api/viewings", {
+      params: {
+        lat: 37.5665,
+        lng: 126.978,
+        page: 0,
+        size: 20,
+        sort: "distance",
+      },
+    });
+
+    const page = res.data;
+    console.log("📥 API 응답:", page);
+
+    viewingList.value = page.content.map((v, idx) => {
+      console.log("============== [VIEW ITEM] ==============");
+      console.log(`index ${idx}`);
+      console.log("🔥 raw pictureUrl from server:", v.pictureUrl);
+      console.log("전체 v:", v);
+
+      const converted = getImageUrl(v.pictureUrl);
+
+      console.log("➡️ 최종 적용 URL:", converted);
+      console.log("=========================================");
+
+      return {
+        id: v.viewingCode,
+        sport: sportMap[v.sportName] ?? "ETC",
+        sportLabel: v.sportName,
+        name: v.restaurantName,
+        area: v.teamName,
+        distance: (v.distance ?? 0).toFixed(2) + "km",
+        rating: 4.7,
+        tablesAvailable: v.viewingMaxNum ?? 3,
+        status: "BOOKING",
+        themeColor: "blue",
+        badge: v.viewingTitle,
+        highlight: v.viewingBody,
+        pictureUrl: converted,
+      };
+    });
+  } catch (e) {
+    console.error("❌ 관람 조회 실패:", e);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+/* ===================== 카테고리 필터 ===================== */
 const categories = [
   { id: "ALL", label: "전체" },
   { id: "SOCCER", label: "축구" },
@@ -301,86 +371,24 @@ const categories = [
   { id: "BASKETBALL", label: "농구" },
 ];
 
-// 스포츠 아이콘
+const selectedCategory = ref("ALL");
+
+const filteredViewings = computed(() => {
+  if (selectedCategory.value === "ALL") return viewingList.value;
+  return viewingList.value.filter((v) => v.sport === selectedCategory.value);
+});
+
 const sportEmojiMap = {
   SOCCER: "⚽",
   BASEBALL: "⚾",
   BASKETBALL: "🏀",
 };
 
-// 더미 가게 데이터
-const restaurants = [
-  {
-    id: 1,
-    sport: "SOCCER",
-    sportLabel: "축구",
-    name: "상암 스카이 펍",
-    area: "마포구 상암동",
-    distance: "0.6km",
-    rating: 4.8,
-    tablesAvailable: 4,
-    status: "BOOKING",
-    themeColor: "blue",
-    badge: "프리미어리그 생중계",
-    highlight: "빅매치 라이브 · 대형 스크린",
-  },
-  {
-    id: 2,
-    sport: "BASEBALL",
-    sportLabel: "야구",
-    name: "잠실 레전드 포차",
-    area: "송파구 잠실동",
-    distance: "0.8km",
-    rating: 4.7,
-    tablesAvailable: 6,
-    status: "BOOKING",
-    themeColor: "red",
-    badge: "KBO 응원존",
-    highlight: "경기 끝나고 2차까지",
-  },
-  {
-    id: 3,
-    sport: "SOCCER",
-    sportLabel: "축구",
-    name: "강남 풋볼 라운지",
-    area: "강남역 인근",
-    distance: "1.2km",
-    rating: 4.9,
-    tablesAvailable: 3,
-    status: "BOOKING",
-    themeColor: "indigo",
-    badge: "유럽 축구 새벽 경기",
-    highlight: "프리미어리그 · 챔스 전문",
-  },
-  {
-    id: 4,
-    sport: "BASKETBALL",
-    sportLabel: "농구",
-    name: "홍대 코트 사이드 펍",
-    area: "마포구 홍대입구",
-    distance: "2.0km",
-    rating: 4.6,
-    tablesAvailable: 0,
-    status: "SOLD_OUT",
-    themeColor: "orange",
-    badge: "NBA 플옵 생중계",
-    highlight: "단체석 위주 농구 펍",
-  },
-];
-
-// 상태
-const selectedCategory = ref("ALL");
+/* ===================== 모달 ===================== */
 const isModalOpen = ref(false);
 const selectedRestaurant = ref(null);
 const modalStep = ref(1);
 
-// 필터
-const filteredRestaurants = computed(() => {
-  if (selectedCategory.value === "ALL") return restaurants;
-  return restaurants.filter((r) => r.sport === selectedCategory.value);
-});
-
-// 모달
 const openReservationModal = (restaurant) => {
   selectedRestaurant.value = restaurant;
   modalStep.value = 1;
@@ -395,19 +403,19 @@ const confirmReservation = () => {
 const closeModal = () => {
   isModalOpen.value = false;
   document.body.style.overflow = "";
-  setTimeout(() => {
-    selectedRestaurant.value = null;
-  }, 300);
+  setTimeout(() => (selectedRestaurant.value = null), 300);
 };
 
-// 최초 실행
+/* ===================== 최초 실행 ===================== */
 onMounted(() => {
+  console.log("🌐 Home.vue Mounted");
   saveTokenIfExists();
   checkLoginStatus();
+  loadViewings();
 });
 </script>
 
-<style scoped>
+  <style scoped>
 @import "@/assets/shared/basic/buttons.css";
 
 :root {

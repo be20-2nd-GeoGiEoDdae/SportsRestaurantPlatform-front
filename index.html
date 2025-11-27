@@ -8,15 +8,22 @@
     <!-- Google Maps API (async만 사용) -->
     <script
             async
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQLs6MyWACHJgUZ8PVoVjV2BrMcf0-V8M&libraries=places&language=ko&v=beta">
+            defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQLs6MyWACHJgUZ8PVoVjV2BrMcf0-V8M&libraries=places&language=ko&callback=initGoogleMaps">
     </script>
 
+    <script>
+        window.initGoogleMaps = function () {
+            window.dispatchEvent(new Event("google-maps-ready"));
+        };
+    </script>
     <!-- Google Maps Web Components (gmpx) -->
     <script type="module"
             src="https://unpkg.com/@googlemaps/extended-component-library@latest/dist/index.min.js">
     </script>
 
   <script src="https://js.tosspayments.com/v2/standard"></script>
+
 </head>
 
 <body>

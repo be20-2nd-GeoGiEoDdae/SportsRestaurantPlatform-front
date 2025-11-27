@@ -18,7 +18,7 @@
         
         <Button
             type="button"
-            @click="goToMain"
+            @click="WelcomeView"
             variant="primary"
             class="main-btn"
           >

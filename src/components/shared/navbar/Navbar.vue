@@ -11,7 +11,7 @@
       <!-- 메뉴 -->
       <div class="menu-group">
         <router-link
-            to="restaurant"
+            to="/restaurant"
             custom
             v-slot="{ href, navigate, isActive }"
         >
@@ -21,7 +21,7 @@
         </router-link>
 
         <router-link
-            to="viewing"
+            to="/viewing"
             custom
             v-slot="{ href, navigate, isActive }"
         >

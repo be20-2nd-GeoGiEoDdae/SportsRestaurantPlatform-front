@@ -1,128 +1,148 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import axios from "axios";
-import { useRoute, useRouter } from "vue-router";
-import SidebarUser from "@/components/shared/sidebar/user/SidebarUser.vue";
+import Navbar from "@/components/shared/navbar/Navbar.vue";
+import Button from "@/components/shared/basic/Button.vue";
 
-const route = useRoute();
 const router = useRouter();
+const route = useRoute();
 
-// ===============================
-// API 테스트용 값 (나중에 store/useUser로 변경 가능)
-// ===============================
-const userId = 1;          // 로그인 유저 ID
-const restaurantId = 1;   // 이 Viewing이 속한 식당 ID
-const viewingCode = 1;     // summary API용
+// 로그인 처리
+const isLoggedIn = ref(false);
 
-// ===============================
-// 상태값
-// ===============================
-const matchTitle = ref("");
-const placeName = ref("");
-const typeName = ref("");
-const pictureUrls = ref([]);
+const saveTokenIfExists = () => {
+  const access = route.query.accessToken;
+  const refresh = route.query.refreshToken;
 
-const reviewTitle = ref("");
-const reviewText = ref("");
-const rating = ref(0);
+  if (access) {
+    localStorage.setItem("accessToken", access);
+    if (refresh) localStorage.setItem("refreshToken", refresh);
+    router.replace({ path: route.path });
+    isLoggedIn.value = true;
+  }
+};
 
-const uploadedPhoto = ref(null);
-const fileInput = ref(null);
+const checkLoginStatus = () =>
+    (isLoggedIn.value = !!localStorage.getItem("accessToken"));
 
-// 성공 메시지
-const successMessage = ref("");
+const startSocialLogin = () =>
+    (window.location.href = "http://localhost:8080/oauth2/authorization/kakao");
 
-// ===============================
-// 이미지 URL 변환
-// ===============================
+const goToService = () => router.push("/restaurant");
+
+// ===================================================
+// ⭐ 이미지 URL 변환 (리뷰 페이지와 동일)
+// ===================================================
 const getImageUrl = (path) => {
   if (!path) return "/images/no-image.png";
   if (path.startsWith("http")) return path;
   return `http://localhost:8080${path}`;
 };
 
-// ===============================
-// summary API 호출
-// ===============================
-const loadViewingSimple = async () => {
+// ===================================================
+// Viewing API 연동
+// ===================================================
+const viewingList = ref([]);
+const isLoading = ref(false);
+
+// 한글 → 코드 변환
+const sportMap = {
+  축구: "SOCCER",
+  야구: "BASEBALL",
+  농구: "BASKETBALL",
+};
+
+const loadViewings = async () => {
   try {
-    const res = await axios.get(
-        `http://localhost:8080/api/viewings/${viewingCode}/simple`
-    );
+    isLoading.value = true;
 
-    matchTitle.value = res.data.viewingTitle;
-    placeName.value = res.data.restaurantName;
-    typeName.value = `${res.data.sportName} / ${res.data.teamName}`;
-
-    pictureUrls.value = res.data.pictureUrls
-        ? res.data.pictureUrls.split(",").map((u) => getImageUrl(u.trim()))
-        : [];
-  } catch (err) {
-    console.error("요약 정보 로드 실패", err);
-  }
-};
-
-// ===============================
-// 파일 업로드 (대표사진 미리보기)
-// ===============================
-const onFileChange = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  uploadedPhoto.value = URL.createObjectURL(file);
-};
-
-// ===============================
-// 리뷰 저장 (DB 저장)
-// ===============================
-const handleSave = async () => {
-  successMessage.value = "";
-
-  const reviewDto = {
-    reviewTitle: reviewTitle.value,
-    reviewBody: reviewText.value,
-    reviewScore: rating.value,
-    restaurantCode: restaurantId,
-    userCode: userId,
-    pictureUrls: []
-  };
-
-  const fd = new FormData();
-
-  // review JSON 추가
-  fd.append(
-      "review",
-      new Blob([JSON.stringify(reviewDto)], {
-        type: "application/json"
-      })
-  );
-
-  // 사진 파일 추가
-  if (fileInput.value?.files?.length) {
-    Array.from(fileInput.value.files).forEach((file) => {
-      fd.append("pictures", file);
+    const res = await axios.get("http://localhost:8080/api/viewings", {
+      params: {
+        lat: 37.5665,
+        lng: 126.9780,
+        page: 0,
+        size: 20,
+        sort: "distance",
+      },
     });
-  }
 
-  try {
-    const res = await axios.post(
-        `http://localhost:8080/api/reviews/${userId}/${restaurantId}`,
-        fd,
-        {
-          headers: { "Content-Type": "multipart/form-data" }
-        }
-    );
+    const page = res.data;
 
-    // 성공 메시지 표시
-    successMessage.value = "등록 완료! 🎉";
-
-  } catch (err) {
-    console.error("리뷰 저장 실패", err);
-    successMessage.value = "등록 실패! ❌";
+    viewingList.value = page.content.map(v => ({
+      id: v.viewingCode,
+      sport: sportMap[v.sportName] ?? "ETC",
+      sportLabel: v.sportName,
+      name: v.restaurantName,
+      area: v.teamName,
+      distance: (v.distance ?? 0).toFixed(2) + "km",
+      rating: 4.7,
+      tablesAvailable: v.viewingMaxNum ?? 3,
+      status: "BOOKING",
+      themeColor: "blue",
+      badge: v.viewingTitle,
+      highlight: v.viewingBody,
+      pictureUrl: getImageUrl(v.pictureUrl),    // ⭐ 여기!!
+    }));
+  } catch (e) {
+    console.error("관람 조회 실패:", e);
+  } finally {
+    isLoading.value = false;
   }
 };
 
+// ===================================================
+// 카테고리
+// ===================================================
+const categories = [
+  { id: "ALL", label: "전체" },
+  { id: "SOCCER", label: "축구" },
+  { id: "BASEBALL", label: "야구" },
+  { id: "BASKETBALL", label: "농구" },
+];
+
+const selectedCategory = ref("ALL");
+
+const filteredViewings = computed(() => {
+  if (selectedCategory.value === "ALL") return viewingList.value;
+  return viewingList.value.filter(v => v.sport === selectedCategory.value);
+});
+
+const sportEmojiMap = {
+  SOCCER: "⚽",
+  BASEBALL: "⚾",
+  BASKETBALL: "🏀",
+};
+
+// ===================================================
+// 모달
+// ===================================================
+const isModalOpen = ref(false);
+const selectedRestaurant = ref(null);
+const modalStep = ref(1);
+
+const openReservationModal = (restaurant) => {
+  selectedRestaurant.value = restaurant;
+  modalStep.value = 1;
+  isModalOpen.value = true;
+  document.body.style.overflow = "hidden";
+};
+
+const confirmReservation = () => (modalStep.value = 2);
+
+const closeModal = () => {
+  isModalOpen.value = false;
+  document.body.style.overflow = "";
+  setTimeout(() => (selectedRestaurant.value = null), 300);
+};
+
+// ===================================================
+// 실행
+// ===================================================
 onMounted(() => {
-  loadViewingSimple();
+  saveTokenIfExists();
+  checkLoginStatus();
+  loadViewings();
 });
 </script>
 

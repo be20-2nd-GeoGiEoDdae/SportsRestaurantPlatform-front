@@ -74,6 +74,8 @@ const routes = [
     /* ====== 일반 사용자 ====== */
 
     { path: '/welcome', name: "WelcomeView", component: WelcomeView },
+    { path: '/signup/additional', name: "SignupAdditional", component: SignupAdditional },
+    { path: '/signup/complete', name: "SignupComplete", component: SignupComplete },
 
     /* ====== 마이페이지 ====== */
     { path: '/MyPage/ProfileEdit', name: 'MyPage-ProfileEdit', component: MyPageProfileEdit },
