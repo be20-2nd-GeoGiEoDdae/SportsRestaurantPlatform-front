@@ -286,7 +286,7 @@ const startSocialLogin = () => {
 
 // 서비스 이용하기
 const goToService = () => {
-  router.push("/user/restaurant");
+  router.push("/restaurant");
 };
 
 // ==============================

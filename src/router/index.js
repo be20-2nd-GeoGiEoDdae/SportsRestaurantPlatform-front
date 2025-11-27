@@ -2,12 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from "@/stores/authStore";
 
 /* ====== Import Views ====== */
-import RestaurantRegisterView from '@/views/restaurant/entrepreneur/RestaurantRegisterView.vue'
-import RestaurantListView from "@/views/restaurant/entrepreneur/RestaurantListView.vue";
-import RestaurantListDetailedView from "@/views/restaurant/entrepreneur/RestaurantListDetailedView.vue";
-import ViewingRegisterView from "@/views/viewing/entrepreneur/ViewingRegisterView.vue";
-import ViewingListView from "@/views/viewing/entrepreneur/ViewingListView.vue";
-import ViewingListDetailedView from "@/views/viewing/entrepreneur/ViewingListDetailedView.vue";
+import RestaurantRegisterView from '@/views/restaurant/RestaurantRegisterView.vue'
+import RestaurantListView from "@/views/restaurant/RestaurantListView.vue";
+import RestaurantListDetailedView from "@/views/restaurant/RestaurantListDetailedView.vue";
+import ViewingRegisterView from "@/views/viewing/ViewingRegisterView.vue";
+import ViewingListView from "@/views/viewing/ViewingListView.vue";
+import ViewingListDetailedView from "@/views/viewing/ViewingListDetailedView.vue";
 
 import Home from '@/views/Home.vue'
 import AdminLogin from '@/views/admin/AdminLogin.vue'
@@ -40,10 +40,6 @@ import ReservationView from "@/views/reservation/ReservationView.vue";
 import AnnouncementsListView from "@/views/announcement/AnnouncementsListView.vue";
 import AnnouncementsDetailView from "@/views/announcement/AnnouncementsDetailView.vue";
 
-import RestaurantListDetailedUserView from "@/views/restaurant/user/RestaurantListDetailedUserView.vue";
-import ViewingListUserView from "@/views/viewing/user/ViewingListUserView.vue";
-import ViewingListDetailedUserView from "@/views/viewing/user/ViewingListDetailedUserView.vue";
-
 import MyPageProfileEdit from "@/views/mypage/MyPageProfileEdit.vue";
 import MyPageSubscribeSuccess from "@/views/mypage/MyPageSubscribeSuccess.vue";
 import ViewingPaySuccess from "@/views/viewing/ViewingPaySuccess.vue";
@@ -68,18 +64,14 @@ const routes = [
     { path: '/admin/announcement/Announcement', name: 'Announcement', component: Announcement },
 
     /* ====== 사업자 ====== */
-    { path: '/entrepreneur/restaurant/register', name: 'RestaurantRegister', component: RestaurantRegisterView },
-    { path: '/entrepreneur/restaurant', name: 'RestaurantListEntrepreneur', component: RestaurantListView },
-    { path: '/entrepreneur/restaurant/detailed/:id', name: 'RestaurantListDetailedEntrepreneur', component: RestaurantListDetailedView },
-    { path: '/entrepreneur/viewing/register', name: 'ViewingRegister', component: ViewingRegisterView },
-    { path: '/entrepreneur/viewing', name: 'ViewingListEntrepreneur', component: ViewingListView },
-    { path: '/entrepreneur/viewing/detailed/:id', name: 'ViewingListDetailedEntrepreneur', component: ViewingListDetailedView },
+    { path: '/restaurant/register', name: 'Restaurant', component: RestaurantRegisterView },
+    { path: '/restaurant', name: 'RestaurantList', component: RestaurantListView },
+    { path: '/restaurant/detailed/:id', name: 'RestaurantListDetailed', component: RestaurantListDetailedView },
+    { path: '/viewing/register', name: 'ViewingRegister', component: ViewingRegisterView },
+    { path: '/viewing', name: 'ViewingList', component: ViewingListView },
+    { path: '/viewing/detailed/:id', name: 'ViewingListDetailed', component: ViewingListDetailedView },
 
     /* ====== 일반 사용자 ====== */
-
-    { path: '/user/restaurant/detailed/:id', name: "RestaurantListDetailedUser", component: RestaurantListDetailedUserView },
-    { path: '/user/viewing', name: "ViewingListUser", component: ViewingListUserView },
-    { path: '/user/viewing/detailed/:id', name: "ViewingListDetailedUser", component: ViewingListDetailedUserView },
 
     { path: '/welcome', name: "WelcomeView", component: WelcomeView },
 

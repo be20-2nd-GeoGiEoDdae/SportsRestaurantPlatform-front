@@ -63,23 +63,6 @@
         </div>
       </div>
 
-      <!-- 오른쪽 예약 박스 -->
-      <div class="reserve-box">
-        <p class="reserve-title">인원 수</p>
-
-        <div class="count-box">
-          <Button class="count-btn" @click="minus">-</Button>
-          <Input type="text" class="count-input" v-model="count" readonly />
-          <Button class="count-btn" @click="plus">+</Button>
-        </div>
-
-        <div class="total-row">
-          <p>총 금액</p>
-          <p class="total-price">{{ totalPrice.toLocaleString() }} 원</p>
-        </div>
-
-        <Button type="primary" class="reserve-btn">예약</Button>
-      </div>
 
     </section>
 
@@ -127,7 +110,7 @@
     </div>
 
     <!-- 하단 버튼 -->
-    <div class="bottom-actions">
+    <div class="bottom-actions" v-if="userRole === 'ENTREPRENEUR'">
       <Button class="delete-btn">삭제</Button>
       <Button class="edit-btn" type="primary">수정</Button>
     </div>
@@ -158,6 +141,22 @@ import { ElPagination } from "element-plus";
 
 import "@/assets/restaurant/RestaurantListDetailedView.css";
 
+/* ============================
+   ⭐ JWT Role 불러오기
+=============================== */
+import { useAuthStore } from "@/stores/authStore";
+const authStore = useAuthStore();
+
+let userRole = ref(null);
+
+(async () => {
+  try {
+    await authStore.loadFromToken();
+    userRole.value = authStore.role;
+  } catch (e) {
+    console.error("JWT 로드 실패:", e);
+  }
+})();
 
 /* -----------------------------
     상태값
@@ -169,48 +168,26 @@ const reviews = ref([]);
 
 const route = useRoute();
 
-
 /* -----------------------------
     백엔드 이미지 URL
 ----------------------------- */
 const getImageUrl = (path) =>
     path ? `http://localhost:8080${path}` : "/images/default.jpg";
 
-
-/* -----------------------------
-    라이트박스
------------------------------ */
+/* 라이트박스 */
 const lightboxVisible = ref(false);
 const lightboxIndex = ref(0);
 const lightboxImages = ref([]);
 
-const openLightbox = (i) => {
-  lightboxImages.value = images.value;
-  lightboxIndex.value = i;
-  lightboxVisible.value = true;
-};
-
-const openLightboxReview = (review) => {
-  lightboxImages.value = [getImageUrl(review.pictures)];
-  lightboxIndex.value = 0;
-  lightboxVisible.value = true;
-};
-
-
-/* -----------------------------
-    예약 박스
------------------------------ */
+/* 예약 박스 */
 const count = ref(1);
 const pricePerPerson = 30000;
-
 const totalPrice = computed(() => count.value * pricePerPerson);
+
 const plus = () => count.value++;
 const minus = () => count.value > 1 && count.value--;
 
-
-/* -----------------------------
-    리뷰 페이징
------------------------------ */
+/* 페이징 */
 const pageInfo = ref({
   page: 1,
   size: 2,
@@ -227,53 +204,35 @@ const handlePageChange = (page) => {
   pageInfo.value.page = page;
 };
 
-
-/* -----------------------------
-    리뷰 정렬
------------------------------ */
+/* 정렬 */
 const sortByScore = () => {
   reviews.value.sort((a, b) => b.reviewScore - a.reviewScore);
   pageInfo.value.page = 1;
 };
 
-
-/* -----------------------------
-    평균 평점
------------------------------ */
+/* 평균 평점 */
 const avgScore = computed(() => {
   if (reviews.value.length === 0) return "-";
   const sum = reviews.value.reduce((acc, r) => acc + r.reviewScore, 0);
   return (sum / reviews.value.length).toFixed(1);
 });
 
-
-/* -----------------------------
-    상세 조회 + 리뷰 조회
------------------------------ */
+/* 상세 조회 */
 onMounted(async () => {
   const id = route.params.id;
 
   try {
-    /* ⭐ Restaurant 상세 */
     const { data } = await axios.get(`http://localhost:8080/api/restaurants/${id}`);
     restaurant.value = data;
 
-    /* 키워드 */
     if (data.keywords) {
-      tags.value = data.keywords
-          .split(",")
-          .map(v => v.trim())
-          .filter(v => v.length > 0);
+      tags.value = data.keywords.split(",").map(v => v.trim()).filter(Boolean);
     }
 
-    /* 사진 */
     if (data.pictureUrls) {
-      images.value = data.pictureUrls
-          .split(",")
-          .map(p => getImageUrl(p.trim()));
+      images.value = data.pictureUrls.split(",").map(p => getImageUrl(p.trim()));
     }
 
-    /* ⭐ 리뷰 조회 */
     const res = await axios.get(`http://localhost:8080/api/reviews/restaurant/${id}`);
     reviews.value = res.data;
     pageInfo.value.totalElements = reviews.value.length;
@@ -283,6 +242,8 @@ onMounted(async () => {
   }
 });
 </script>
+
+
 <style scoped>
 .bottom-pagination {
   display: flex;

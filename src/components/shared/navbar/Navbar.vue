@@ -7,10 +7,11 @@
     </div>
 
     <nav class="navbar-right">
+
       <!-- 메뉴 -->
       <div class="menu-group">
         <router-link
-            to="/user/restaurant"
+            to="restaurant"
             custom
             v-slot="{ href, navigate, isActive }"
         >
@@ -20,7 +21,7 @@
         </router-link>
 
         <router-link
-            to="/user/viewing"
+            to="viewing"
             custom
             v-slot="{ href, navigate, isActive }"
         >
@@ -39,22 +40,32 @@
         </div>
       </div>
 
-      <!-- 유저 정보 -->
+      <!-- =========================
+            ⭐ 유저 정보 영역
+         ========================= -->
       <div class="user-section">
-        <router-link
-            v-if="userId"
-            to="/MyPage/ProfileEdit"
-            class="user-link"
-        >
-          {{ userName }}님
-        </router-link>
 
-        <span v-else>로그인</span>
+        <!-- 로그인 상태 -->
+        <template v-if="userId">
+          <router-link
+              to="/MyPage/ProfileEdit"
+              class="user-link"
+          >
+            {{ userName }}님
+          </router-link>
 
-        <span class="divider">/</span>
+          <span class="divider">/</span>
 
-        <button class="logout-btn" @click="logout">로그아웃</button>
+          <button class="logout-btn" @click="logout">로그아웃</button>
+        </template>
+
+        <!-- 로그아웃 상태 -->
+        <template v-else>
+          <!-- 아무것도 표시하지 않음 -->
+        </template>
+
       </div>
+
     </nav>
   </header>
 </template>
@@ -63,7 +74,7 @@
 
 <script setup>
 import { onMounted, ref, onBeforeUnmount } from "vue";
-import { getAuthUser } from "@/utils/auth";   // JWT decode 유틸
+import { getAuthUser } from "@/utils/auth";
 import { useRouter } from "vue-router";
 import logo from "@/assets/logo/logo.png";
 
@@ -78,34 +89,41 @@ const currentNotice = ref(null);
 let es = null;
 let hideTimer = null;
 
-// ⭐ 토큰에서 사용자 정보 불러오기
+/* ============================
+   ⭐ 토큰에서 사용자 정보 로드
+=============================== */
 onMounted(() => {
   const info = getAuthUser();
+
   if (info) {
-    userId.value = Number(info.sub);   // "21" → 21
-    userName.value = info.email;       // 이름 대신 email 사용(백엔드 구조상)
+    userId.value = Number(info.sub);
+    userName.value = info.email;
   }
 });
 
-// 🔔 알림 10초 표시
+/* ============================
+   🔔 알림 배너 표시
+=============================== */
 const showNotification = (text) => {
   notifications.value.unshift({ id: Date.now(), text });
   currentNotice.value = text;
 
   if (hideTimer) clearTimeout(hideTimer);
+
   hideTimer = setTimeout(() => {
     currentNotice.value = null;
   }, 10000);
 };
 
-// 🔔 SSE 연결 (userId 자동 반영)
+/* ============================
+   🔔 SSE 알림 연결
+=============================== */
 const alarmConnect = () => {
   if (!userId.value) {
     alert("로그인이 필요합니다.");
     return;
   }
 
-  // 테스트 알림
   showNotification("알림 연결 중입니다...");
 
   if (es && es.readyState === EventSource.OPEN) return;
@@ -125,16 +143,21 @@ const alarmConnect = () => {
   };
 };
 
-// ⭐ 로그아웃 처리
+/* ============================
+   ⭐ 로그아웃
+=============================== */
 const logout = () => {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
   userId.value = null;
   userName.value = "로그인 필요";
 
-  router.push("/welcome"); // 로그인 페이지로 이동
+  router.push("/welcome");
 };
 
+/* ============================
+   언마운트 처리
+=============================== */
 onBeforeUnmount(() => {
   if (es) es.close();
   if (hideTimer) clearTimeout(hideTimer);

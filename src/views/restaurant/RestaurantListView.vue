@@ -61,7 +61,8 @@
             {{ sortLabel }} ▼
           </button>
 
-          <div v-if="showSortMenu" class="dropdown-menu">
+          <!-- v-if ➜ v-show 로 변경 -->
+          <div v-show="showSortMenu" class="dropdown-menu">
             <div class="dropdown-item" @click="selectSort('distance')">가까운 거리순</div>
             <div class="dropdown-item" @click="selectSort('score')">평점순</div>
             <div class="dropdown-item" @click="selectSort('name')">이름순</div>
@@ -77,8 +78,13 @@
             :key="store.restaurantCode"
         >
           <router-link
-              :to="{ name: 'RestaurantListDetailedEntrepreneur', params: { id: store.restaurantCode } }">
-            <img :src="getImageUrl(store.pictureUrls)" class="store-img" />
+              :to="{ name: 'RestaurantListDetailed', params: { id: store.restaurantCode } }"
+          >
+            <img
+                :src="getImageUrl(store.pictureUrls)"
+                class="store-img"
+                alt="가게 이미지"
+            />
           </router-link>
 
           <div class="store-info">
@@ -110,8 +116,9 @@
 
       <!-- 페이지네이션 -->
       <div class="bottom-pagination">
+        <!-- v-if → v-show 로 변경 -->
         <el-pagination
-            v-if="pageInfo"
+            v-show="pageInfo"
             :current-page="pageInfo?.page"
             :page-size="pageInfo?.size"
             :total="pageInfo?.totalElements"
@@ -120,7 +127,7 @@
         />
       </div>
 
-      <!-- 등록 버튼 (사업자만 표시) -->
+      <!-- 등록 버튼 -->
       <div class="register-row" v-if="userRole === 'ENTREPRENEUR'">
         <Button type="primary" @click="$router.push('/entrepreneur/restaurant/register')">
           가게 등록하기
@@ -140,7 +147,7 @@ import Text from "@/components/shared/basic/Text.vue";
 import Label from "@/components/shared/basic/Label.vue";
 import { ElPagination } from "element-plus";
 
-import { useAuthStore } from "@/stores/authStore";
+import { useAuthStore } from "@/stores/authStore.js";
 
 /* ---------------------------
    Auth Store
@@ -150,11 +157,10 @@ const userId = computed(() => authStore.userId);
 const userRole = computed(() => authStore.role);
 
 /* ---------------------------
-   mount 시 JWT 먼저 로드
+   mount
 ---------------------------- */
 onMounted(async () => {
   await authStore.loadFromToken();
-
   await loadKeywords();
   await loadWithLocation();
 });
@@ -245,8 +251,11 @@ const pageInfo = ref({
 const userLat = ref(null);
 const userLng = ref(null);
 
-const getImageUrl = (path) =>
-    path ? `http://localhost:8080${path}` : "/images/default.jpg";
+const getImageUrl = (paths) => {
+  if (!paths) return "/images/default.jpg";
+  if (Array.isArray(paths)) return `http://localhost:8080${paths[0]}`;
+  return `http://localhost:8080${paths}`;
+};
 
 /* 정렬 */
 const showSortMenu = ref(false);
@@ -256,7 +265,7 @@ const sortLabel = computed(() => ({
   name: "이름순"
 }[sort.value]));
 
-const toggleSortMenu = () => showSortMenu.value = !showSortMenu.value;
+const toggleSortMenu = () => (showSortMenu.value = !showSortMenu.value);
 
 const selectSort = (type) => {
   if (type === "distance" && (!userLat.value || !userLng.value)) {

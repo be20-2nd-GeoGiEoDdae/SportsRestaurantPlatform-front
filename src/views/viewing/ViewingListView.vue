@@ -63,10 +63,7 @@
             {{ sortLabel }} ▼
           </button>
 
-          <div
-              v-if="showSortMenu"
-              class="dropdown-menu"
-          >
+          <div v-if="showSortMenu" class="dropdown-menu">
             <div class="dropdown-item" @click="selectSort('distance')">가까운 거리순</div>
             <div class="dropdown-item" @click="selectSort('score')">평점순</div>
             <div class="dropdown-item" @click="selectSort('name')">이름순</div>
@@ -103,7 +100,7 @@
             <p><strong>팀 :</strong> {{ v.teamName }}</p>
           </div>
 
-          <!-- 즐겨찾기(옵션) -->
+          <!-- 즐겨찾기 -->
           <div class="favorite">⭐</div>
 
           <div class="deposit-right">
@@ -111,7 +108,6 @@
           </div>
         </div>
       </div>
-
 
       <!-- 페이지 -->
       <div class="bottom-pagination">
@@ -125,6 +121,12 @@
         />
       </div>
 
+      <!-- ⭐ 사업자에게만 보이는 버튼 -->
+      <div class="register-row" v-if="userRole === 'ENTREPRENEUR'">
+        <Button type="primary" @click="$router.push('/viewing/register')">
+          관람 등록하기
+        </Button>
+      </div>
 
     </main>
   </div>
@@ -140,11 +142,15 @@ import Text from "@/components/shared/basic/Text.vue";
 import Label from "@/components/shared/basic/Label.vue";
 import { ElPagination } from "element-plus";
 
-import "@/assets/viewing/ViewingListView.css";
+import { useAuthStore } from "@/stores/authStore";
+
+/* ====================== JWT / 사용자 정보 ======================= */
+
+const authStore = useAuthStore();
+const userRole = computed(() => authStore.role);   // ⭐ role
+const userId = computed(() => authStore.userId);
 
 /* ====================== 상태 ======================= */
-
-const userId = 1;
 
 /* 음식 카테고리 */
 const foods = ["한식", "중식", "일식", "양식", "기타"];
@@ -176,7 +182,6 @@ const categoryNames = {
 };
 const selectedKeywords = ref([]);
 
-/* 키워드 선택 */
 const toggleKeyword = (val) => {
   if (selectedKeywords.value.includes(val)) {
     selectedKeywords.value = selectedKeywords.value.filter(k => k !== val);
@@ -193,7 +198,6 @@ const clearKeywords = () => {
   loadViewings();
 };
 
-/* 키워드 불러오기 */
 const loadKeywords = async () => {
   const res = await axios.get("http://localhost:8080/api/keywords");
   const list = res.data.data;
@@ -253,19 +257,17 @@ const selectSort = (type) => {
   loadViewings();
 };
 
-/* 음식 */
 const toggleFood = (item) => {
   selectedFoods.value = [item];
   pageInfo.value.page = 1;
   loadViewings();
 };
 
-/* 메인 API */
 const loadViewings = async (page = 1) => {
   try {
     const res = await axios.get("http://localhost:8080/api/viewings", {
       params: {
-        userId,
+        userId: userId.value,
         category: selectedFoods.value[0]
             ? categoryEnumMap[selectedFoods.value[0]]
             : null,
@@ -291,12 +293,10 @@ const loadViewings = async (page = 1) => {
   }
 };
 
-/* 페이징 */
 const handlePageChange = (page) => {
   loadViewings(page);
 };
 
-/* 위치 갱신 */
 const refreshLocation = () => {
   navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -308,9 +308,10 @@ const refreshLocation = () => {
   );
 };
 
-/* 초기 실행 */
-onMounted(() => {
+onMounted(async () => {
+  await authStore.loadFromToken();  // ⭐ JWT에서 role + userId 불러오기
   loadKeywords();
+
   navigator.geolocation.getCurrentPosition(
       (pos) => {
         userLat.value = pos.coords.latitude;
@@ -324,6 +325,7 @@ onMounted(() => {
 
 <style scoped>
 @import "@/assets/viewing/ViewingListView.css";
+
 .bottom-pagination {
   display: flex;
   justify-content: center;
